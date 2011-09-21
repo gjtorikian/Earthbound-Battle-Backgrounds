@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+	<!--
+    Copyright 2011 Garen J. Torikian
+  
+    This file is part of EarthboundBattleBackground.
+
+    EarthboundBattleBackground is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    EarthboundBattleBackground is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with EarthboundBattleBackground.  If not, see <http://www.gnu.org/licenses/>.
+	-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+	android:title="@string/app_settings" android:key="earthboundlw_settings">
+
+	<PreferenceScreen android:id="@+id/help"
+		android:title="@string/help" android:key="help" />
+
+	<PreferenceCategory android:title="@string/preferences_change_background">
+		<ListPreference android:id="@+id/background_layer_one"
+			android:title="@string/background_layer_one" android:summary="@string/background_layer_value"
+			android:key="backgroundLayerOne" android:defaultValue="270"
+			android:entries="@array/layers" android:entryValues="@array/layerValues" />
+
+		<ListPreference android:id="@+id/background_layer_two"
+			android:title="@string/background_layer_two" android:summary="@string/background_layer_value"
+			android:key="backgroundLayerTwo" android:defaultValue="269"
+			android:entries="@array/layers" android:entryValues="@array/layerValues" />
+
+		<PreferenceScreen android:id="@+id/randomLayer"
+			android:title="@string/randomLayer" android:key="randomLayer" />
+
+		<ListPreference android:id="@+id/enemyMatchup"
+			android:title="@string/enemyMatchup" android:summary="@string/enemyMatchup_summary"
+			android:key="enemyMatchup" android:entries="@array/enemy"
+			android:entryValues="@array/enemyValues" />
+<!-- 
+		<PreferenceScreen android:id="@+id/gallery"
+			android:title="@string/gallery_view" android:key="gallery" /> -->
+			
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="@string/preferences_change_presentation">
+		<ListPreference android:id="@+id/aspect_ratio"
+			android:title="@string/aspect_ratio" android:summary="@string/aspect_ratio_summary"
+			android:key="aspectRatio" android:defaultValue="16" android:entries="@array/aspect_ratio"
+			android:entryValues="@array/aspect_ratio_values" />
+
+		<ListPreference android:id="@+id/frameskip"
+			android:title="@string/frameskip" android:summary="@string/frameskip_summary"
+			android:key="frameskip" android:defaultValue="3" android:entries="@array/frameskip"
+			android:entryValues="@array/frameskipValues" />
+	</PreferenceCategory>
+</PreferenceScreen>

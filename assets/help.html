@@ -1,0 +1,40 @@
+<html> 
+<head> 
+  <title>Help / About</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no;"/> 
+</head> 
+<body> 
+<h3>About</h3>
+<p>The Earthbound Battle Background live wallpaper is exactly what its name implies: a live wallpaper for Android 2.1 (or higher) that shows the battle backgrounds from the SNES RPG Earthbound.</p>
+<p>Every battle background is composed of two layers, each with 326 possible styles (including "blank"). Thus, there are 326 * 326 = 106,276 possible different background combinations. Obviously, this many don't exist in the game&mdash;they only <em>potentially</em> exist.</p>
+<p>It's pretty damn hard to find out which battle backgrounds correspond to which enemies. You can review the list of enemies matched with known battle backgrounds to try and get your favorite on the <strong>Suggested Layers</strong> option. If you discover a new one, please, email me and I'll add it to the list, giving you full credit! You can find a COMPLETE list of potential battle backgrounds by going here: <a href="http://eblw.galaxyclock.com/" target="_blank">http://eblw.galaxyclock.com</a>.</p>
+<h3>How it Works</h3>
+<p>The data for each of the 326 styles are bundled within the app. Tiles are constructed from various memory addresses in Earthbound game data. To create the distortion effect, the following function is used:
+<pre>
+Offset (y, t) = A sin ( F*y + S*t )
+</pre> where:
+	<ul>
+		<li><em>y</em> is the vertical coordinate being transformed</li>
+		<li><em>t</em> is time that's elapsed</li>
+		<li><em>A</em> is the amplitude</li>
+		<li><em>F</em> is the frequency</li>
+		<li><em>S</em> is the speed or frameskip of the transformation</li>
+	</ul>
+Offest refers to the <em>y</em> direction of the shift at a given time <em>t</em>.</p>
+<p>There are also three types of distortions that use the result of the Offset function:
+<ul>
+   <li>Horizontal translations, where each line is shifted left by the given number of pixels</li>
+   <li>Horizontal interlaced translations, where every other line is shifted right by the given number of pixels</li>
+   <li>Vertical compression translations, where each line is shifted up or down by the given number of pixels</li>
+</ul>   
+Different backgrounds use different distortion effects.</p>
+<h3>License</h3>
+<p>This app is in no way endorsed or affiliated by Nintendo, Ape, HAL Laboratory, Shigesato Itoi, e.t.c. It's licensed under the GPL License, Version 3. You may obtain a copy of the License at <a href="http://www.gnu.org/licenses">http://www.gnu.org/licenses</a>.</p>
+<h3>Credits</h3>
+<p>I am entirely indebted to Mr. Accident of forum.starmen.net for the original battle background generation code, which was a C# project that uses the battle backgrounds as Windows screensavers. He also provided me with help along the way, and as far as I'm aware, he discovered the math behind it all, including the entire Offset function calculation. <strong>This port would be nothing without him.</strong></p>
+<p>Additionally, everyone who worked on PK Hack or was even associated with the project. It's incredible to witness such a powerful community of fans who have turned a wonderful game inside-out over and over again.</p>
+<p>And thank you to the people on StackOverflow and the NDK Group who answered my repetitive questions with patience and clarity.</p>
+<h3>Discredits</h3>
+<p>Java, for <em>still</em> not having the concept of unsigned types. You made my app difficult.</p>
+</body> 
+</html>

@@ -1,0 +1,49 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+	<!--
+    Copyright 2011 Garen J. Torikian
+  
+    This file is part of EarthboundBattleBackground.
+
+    EarthboundBattleBackground is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    EarthboundBattleBackground is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with EarthboundBattleBackground.  If not, see <http://www.gnu.org/licenses/>.
+	-->
+	
+	<string name="app_name">Earthbound Battle Backgrounds</string>
+	<string name="app_desc">Display battle backgrounds from Earthbound/Mother 2</string>
+
+	<string name="app_settings">Earthbound Battle Background Settings</string>
+
+	<string name="help">Help / About</string>
+
+	<string name="preferences_change_background">Change Background Animation</string>
+	<string name="background_layer_one">Background Layer One</string>
+	<string name="background_layer_two">Background Layer Two</string>
+	<string name="background_layer_value">Current Layer: %s</string>
+	<string name="randomLayer">Pick Random Layers</string>
+	<string name="enemyMatchup">Suggested Layers</string>
+	<string name="enemyMatchup_summary">List of layer combinations that match known battles
+		in the game. If you find more, email me and I\'ll add them!</string>
+
+	<string name="gallery_view">View All Backgrounds</string>
+	
+	<string name="preferences_change_presentation">Change Presentation</string>
+	<string name="aspect_ratio">Aspect ratio</string>
+	<string name="aspect_ratio_summary">Current Ratio: %s</string>
+	<string name="frameskip">Frameskip</string>
+	<string name="frameskip_summary">\"Speed\" of background. Current Frameskip: %s</string>
+	
+	<string name="changing_setting">Changing...</string>
+	
+	<string name="unpaid_app">It looks like this app wasn\'t paid for! Please buy the Earthbound Battle Background live wallpaper from the Android Market.</string>
+	<string name="error_in_check">There was an error in verifying if this app was purchased legitimately.</string>
+</resources>
