@@ -30,6 +30,12 @@ Different backgrounds use different distortion effects.
 ### License
 This app is in no way endorsed or affiliated by Nintendo, Ape, HAL Laboratory, Shigesato Itoi, e.t.c. It's licensed under the GPL License, Version 3. You may obtain a copy of the License at [http://www.gnu.org/licenses](http://www.gnu.org/licenses).
 
+### Donations
+
+This app _is_ available on the Android Market: [https://market.android.com/details?id=com.miadzin.livewallpaper.earthbound&feature=search_result](https://market.android.com/details?id=com.miadzin.livewallpaper.earthbound&feature=search_result).
+
+If this code inspires or helps you at all, please feel free to buy it from the market. Thank you!
+
 ### Credits
 I am entirely indebted to Mr. Accident of forum.starmen.net for the original battle background generation code, which was a C# project that uses the battle backgrounds as Windows screensavers. He also provided me with help along the way, and as far as I'm aware, he discovered the math behind it all, including the entire Offset function calculation. *This port would be nothing without him.*
 
