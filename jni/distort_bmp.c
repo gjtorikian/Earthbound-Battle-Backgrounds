@@ -27,11 +27,11 @@
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
-#define DEBUG 0
+//#define DEBUG
 
 typedef unsigned char BYTE;
 
-/**
+	/*
 		Evaluates the distortion effect at the given destination line and
 		time value and returns the computed offset value.
 		
@@ -45,7 +45,7 @@ typedef unsigned char BYTE;
 		@param y The y-coordinate of the destination line to evaluate for
 		@param t The number of ticks since beginning animation
 		@return The distortion offset for the given (y,t) coordinates
-		*/
+	*/
 static int getAppliedOffset(int y, int t, int distortEffect, short ampl, int ampl_accel, int s_freq, short s_freq_accel, short compr, short compr_accel, short speed)
 {
 	double C1 = 1 / 512.0;
@@ -79,6 +79,7 @@ static int getAppliedOffset(int y, int t, int distortEffect, short ampl, int amp
 
 	return 0;
 }
+
 // Computes a distortion of the source and overlays it on a destination bitmap
 // with specified alpha
 JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_Distorter_ComputeFrame(JNIEnv* env, jobject obj, jobject dst, jobject src, jint distortEffect, jint letterbox, jint ticks, jfloat alpha, jint erase, jshort ampl, jint ampl_accel, jshort s_freq, jint s_freq_accel, jshort compr, jshort compr_accel, jshort speed)
@@ -95,7 +96,7 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_Distorter_Compu
 	}
 
 	if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        LOGE("D-Bitmap format is not RGB_8888 !");
+        LOGE("D-Bitmap format is not RGB_8888 ! Instead, it's %d", dinfo.format);
         return;
     }
 
@@ -109,13 +110,23 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_Distorter_Compu
 	}
 
 	if (sinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        LOGE("S-Bitmap format is not RGB_8888 !");
+        LOGE("S-Bitmap format is not RGB_8888 ! Instead, it's %d", sinfo.format);
         return;
     }
 
 	if ((ret = AndroidBitmap_lockPixels(env, src, &spixels)) < 0) {
 		LOGE("AndroidBitmap_lockPixels() in ComputeFrame failed for SRC -- error=%d", ret);
 	}
+
+
+	#ifdef DEBUG
+		LOGI("AndroidBitmap_getInfo() %d", ret);
+	    LOGI("D-Bitmap format is %d", dinfo.format);
+		LOGI("AndroidBitmap_lockPixels() %d", ret);
+		LOGI("AndroidBitmap_getInfo() %d", ret);
+	    LOGI("S-Bitmap format is %d", sinfo.format);
+		LOGI("AndroidBitmap_lockPixels() %d", ret);
+	#endif
 
 	int dstStride = dinfo.stride;
 	int srcStride = sinfo.stride;
@@ -124,30 +135,31 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_Distorter_Compu
 	BYTE* bsrc = (BYTE*)spixels;
 
 	/*
-	Given the list of 4 distortions and the tick count, decide which
-	effect to use:
+		Given the list of 4 distortions and the tick count, decide which
+		effect to use:
 
-	Basically, we have 4 effects, each possibly with a duration.
+		Basically, we have 4 effects, each possibly with a duration.
 
-	Evaluation order is: 1, 2, 3, 0
+		Evaluation order is: 1, 2, 3, 0
 
-	If the first effect is null, control transitions to the second effect.
-	If the first and second effects are null, no effect occurs.
-	If any other effect is null, the sequence is truncated.
-	If a non-null effect has a zero duration, it will not be switched
-	away from.
+		If the first effect is null, control transitions to the second effect.
+		If the first and second effects are null, no effect occurs.
+		If any other effect is null, the sequence is truncated.
+		If a non-null effect has a zero duration, it will not be switched
+		away from.
 
-	Essentially, this configuration sets up a precise and repeating
-	sequence of between 0 and 4 different distortion effects. Once we
-	compute the sequence, computing the particular frame of which distortion
-	to use becomes easy; simply mod the tick count by the total duration
-	of the effects that are used in the sequence, then check the remainder
-	against the cumulative durations of each effect.
+		Essentially, this configuration sets up a precise and repeating
+		sequence of between 0 and 4 different distortion effects. Once we
+		compute the sequence, computing the particular frame of which distortion
+		to use becomes easy; simply mod the tick count by the total duration
+		of the effects that are used in the sequence, then check the remainder
+		against the cumulative durations of each effect.
 
-	I guess the trick is to be sure that my description above is correct.
+		I guess the trick is to be sure that my description above is correct.
 
-	Heh.
-*/
+		Heh.
+	*/
+
 	int x = 0, y = 0;
 
 	for (y = 0; y < 224; y++)
@@ -211,14 +223,14 @@ jmethodID getRGBPal_mid) {
 			jint rgbArray = (*env)->CallIntMethod(env, obj, getRGBPal_mid, pal, tile, subpal, i, j);
 			
 			if (hflip == 1)
-			px = x + 7 - i;
+				px = x + 7 - i;
 			else
-			px = x + i;
+				px = x + i;
 
 			if (vflip == 1)
-			py = y + 7 - j;
+				py = y + 7 - j;
 			else
-			py = y + j;
+				py = y + j;
 
 			int pos = (px * 4) + (py * stride);
 			
@@ -243,7 +255,7 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_romlib_RomGraph
 	}
 	
 	if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
-        LOGE("Bitmap format is not RGB_8888 !");
+        LOGE("Bitmap format is not RGB_8888 ! Instead, it's %d", dinfo.format);
         return;
     }
 
@@ -252,10 +264,22 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_romlib_RomGraph
 		return;
 	}
 
+	#ifdef DEBUG
+		LOGI("AndroidBitmap_getInfo() %d", ret);
+        LOGI("Bitmap format %d", dinfo.format);
+		LOGI("AndroidBitmap_lockPixels() %d", ret);
+	#endif
+
 	uint32_t stride = dinfo.stride;
 	
-	jshort* buffer = (*env)->NewShortArray(env, arrLength);
-	(*env)->GetShortArrayRegion(env, arr, 0, arrLength, (jshort*) buffer);
+	jshort buffer[arrLength];
+	(*env)->GetShortArrayRegion(env, arr, 0, arrLength, buffer);
+
+	#ifdef DEBUG
+		LOGI("Array length is %d", arrLength);
+		LOGI("Width is %d", dinfo.width);
+		LOGI("Height is %d", dinfo.height);
+	#endif
 
 	uint32_t block = 0, tile = 0, subpal = 0;
 	uint16_t i = 0, j = 0, n = 0, b1 = 0, b2 = 0;
@@ -285,5 +309,9 @@ JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_romlib_RomGraph
 		}
 	}
 	
+	#ifdef DEBUG
+		LOGI("Ok, unlocking pixels...");
+	#endif
+
 	AndroidBitmap_unlockPixels(env, bmp);
 }

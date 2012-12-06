@@ -91,6 +91,7 @@ public class Rom {
 		for (Entry<Type, RomObjectHandler> romh : handlers.entrySet()) {
 			Log.d(LOG_TAG, "Reading "	+ romh.getValue().getClass().getCanonicalName());
 			romh.getValue().ReadClass(this);
+			Log.d(LOG_TAG, "Read "	+ romh.getValue().getClass().getCanonicalName());
 		}
 	}
 

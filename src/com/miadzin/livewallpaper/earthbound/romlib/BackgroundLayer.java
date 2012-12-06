@@ -20,6 +20,7 @@
 package com.miadzin.livewallpaper.earthbound.romlib;
 
 import android.graphics.Bitmap;
+
 import com.miadzin.livewallpaper.earthbound.Distorter;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBG;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBGEffect;

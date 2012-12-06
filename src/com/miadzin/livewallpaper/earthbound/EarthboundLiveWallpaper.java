@@ -21,38 +21,22 @@ package com.miadzin.livewallpaper.earthbound;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.graphics.Shader.TileMode;
-import android.graphics.drawable.BitmapDrawable;
-import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Handler;
-import android.provider.Settings.Secure;
 import android.service.wallpaper.WallpaperService;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
-import android.widget.Toast;
 
-import com.android.vending.licensing.AESObfuscator;
 import com.android.vending.licensing.LicenseChecker;
 import com.android.vending.licensing.LicenseCheckerCallback;
-import com.android.vending.licensing.ServerManagedPolicy;
-import com.android.vending.licensing.LicenseCheckerCallback.ApplicationErrorCode;
 import com.miadzin.livewallpaper.earthbound.licensing.LicenseCallback;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBG;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBGEffect;
@@ -75,8 +59,11 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 		BattleBGEffect BBGE = new BattleBGEffect();
 		BattleBG BBG = new BattleBG();
 
-		// android.os.Debug.waitForDebugger();
-
+		//android.os.Debug.waitForDebugger();
+		
+	    //StrictMode.enableDefaults();
+	    
+		
 		try {
 			Rom.registerType("BattleBGEffect", BattleBGEffect.class,
 					BBGE.new Handler());
@@ -134,8 +121,8 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 		public int width = 0;
 		public int height = 0;
 
-		private float sx;
-		private float sy;
+		private float scaledWidth;
+		private float scaledHeight;
 		private float dy;
 
 		private int tick = 0;
@@ -213,8 +200,8 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			width = display.getWidth();
 			height = display.getHeight();
 
-			sx = (float) width / 256;
-			sy = (float) height / 256;
+			scaledWidth = ((float) width )/ 256;
+			scaledHeight = ((float) height) / 256;
 
 			drawFrame();
 		}
@@ -236,16 +223,15 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			final int aspectRatio = Integer.parseInt(mPrefs.getString(
 					EarthboundLiveWallpaperSettings.ASPECT_RATIO, "16"));
 
-			Canvas c = null;
-
+			Canvas canvas = null;
+			canvas = holder.lockCanvas();
+			
 			try {
-				c = holder.lockCanvas();
-				if (c != null) {
-					krakenFrame(c, aspectRatio);
+				synchronized (holder) {
+					krakenFrame(canvas, aspectRatio);
 				}
 			} finally {
-				if (c != null)
-					holder.unlockCanvasAndPost(c);
+				holder.unlockCanvasAndPost(canvas);
 			}
 
 			mHandler.removeCallbacks(mDrawBackground);
@@ -254,13 +240,14 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			}
 		}
 
-		void krakenFrame(Canvas c, int aspectRatio) {
-			c.save();
-			c.drawColor(0xff000000);
+		void krakenFrame(Canvas canvas, int aspectRatio) {
+			canvas.save();
+			canvas.drawColor(0xff000000);
 
 			bmp0 = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888);
 
 			float alpha = 0.5f;
+			
 			if (layer1.getEntry() == 0)
 				alpha = 1.0f;
 
@@ -269,21 +256,21 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 
 			Matrix matrix = new Matrix();
 
-			matrix.postScale(sx, sy + .44f);
-
-			c.drawBitmap(bmp0, matrix, null);
+			matrix.postScale(scaledWidth, scaledHeight + .44f);
+			
+			canvas.drawBitmap(bmp0, matrix, null);
 
 			tick += (frameskip);
 
 			// GJT: Some hacky GCing, same as Mr. A...
 			if (tick % 60 == 0) {
-				System.gc();
+				//System.gc();
 			}
 
-			bmp0.recycle();
-			bmp0 = null;
+			//bmp0.recycle();
+			//bmp0 = null;
 
-			c.restore();
+			canvas.restore();
 		}
 
 		@Override

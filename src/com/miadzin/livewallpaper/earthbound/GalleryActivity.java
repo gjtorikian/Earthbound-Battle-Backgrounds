@@ -19,8 +19,6 @@
 
 package com.miadzin.livewallpaper.earthbound;
 
-import com.miadzin.livewallpaper.earthbound.romlib.BackgroundLayer;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,6 +31,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
+
+import com.miadzin.livewallpaper.earthbound.romlib.BackgroundLayer;
 
 public class GalleryActivity extends Activity {
 

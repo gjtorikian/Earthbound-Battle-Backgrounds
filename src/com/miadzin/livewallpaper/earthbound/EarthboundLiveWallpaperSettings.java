@@ -25,7 +25,6 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -61,7 +60,7 @@ public class EarthboundLiveWallpaperSettings extends PreferenceActivity
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		// android.os.Debug.waitForDebugger();
+		//android.os.Debug.waitForDebugger();
 
 		getPreferenceManager().setSharedPreferencesName(
 				EarthboundLiveWallpaper.SHARED_PREFS_NAME);
