@@ -34,7 +34,7 @@
 	<string name="enemyMatchup_summary">List of layer combinations that match known battles
 		in the game. If you find more, email me and I\'ll add them!</string>
 
-	<string name="gallery_view">View All Backgrounds</string>
+	<!-- <string name="gallery_view">View All Backgrounds</string>  -->
 	
 	<string name="preferences_change_presentation">Change Presentation</string>
 	<string name="aspect_ratio">Aspect ratio</string>
@@ -42,7 +42,7 @@
 	<string name="frameskip">Frameskip</string>
 	<string name="frameskip_summary">\"Speed\" of background. Current Frameskip: %s</string>
 	
-	<string name="changing_setting">Changing...</string>
+	<string name="changing_setting">Changing&#8230;</string>
 	
 	<string name="unpaid_app">It looks like this app wasn\'t paid for! Please buy the Earthbound Battle Background live wallpaper from the Android Market.</string>
 	<string name="error_in_check">There was an error in verifying if this app was purchased legitimately.</string>

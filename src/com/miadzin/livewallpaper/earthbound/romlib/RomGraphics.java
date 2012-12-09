@@ -90,14 +90,14 @@ public abstract class RomGraphics extends RomObject {
 	public void Draw(Bitmap bmp, Palette pal) {
 		DrawInC(bmp, pal, arrRomGraphics, arrRomGraphics.length);
 	}
-	
+
 	public int getRGBPal(Palette pal, int tile, int subpal, int i, int j) {
 		final int pos = tiles.get(tile)[i][j];
 		final int colorChunk = pal.getColors(subpal)[pos];
-		
-		final int r = Color.red(colorChunk);
-		final int g = Color.green(colorChunk);
-		final int b = Color.blue(colorChunk);
+
+		//final int r = Color.red(colorChunk);
+		//final int g = Color.green(colorChunk);
+		//final int b = Color.blue(colorChunk);
 
 		return colorChunk;
 		//return new int[] { r, g, b };

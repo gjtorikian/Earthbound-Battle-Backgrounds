@@ -24,294 +24,298 @@
 #include <math.h>
 
 #define  LOG_TAG    "distort_bmp"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 #define  LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 #define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
 
 //#define DEBUG
 
-typedef unsigned char BYTE;
+//typedef unsigned char BYTE;
 
-	/*
-		Evaluates the distortion effect at the given destination line and
-		time value and returns the computed offset value.
-		
-		If the distortion mode is horizontal, this offset should be interpreted
-		as the number of pixels to offset the given line's starting x position.
-		
-		If the distortion mode is vertical, this offset should be interpreted as
-		the y-coordinate of the line from the source bitmap to draw at the given
-		y-coordinate in the destination bitmap.
-		
-		@param y The y-coordinate of the destination line to evaluate for
-		@param t The number of ticks since beginning animation
-		@return The distortion offset for the given (y,t) coordinates
-	*/
+    /*
+        Evaluates the distortion effect at the given destination line and
+        time value and returns the computed offset value.
+        
+        If the distortion mode is horizontal, this offset should be interpreted
+        as the number of pixels to offset the given line's starting x position.
+        
+        If the distortion mode is vertical, this offset should be interpreted as
+        the y-coordinate of the line from the source bitmap to draw at the given
+        y-coordinate in the destination bitmap.
+        
+        @param y The y-coordinate of the destination line to evaluate for
+        @param t The number of ticks since beginning animation
+        @return The distortion offset for the given (y,t) coordinates
+    */
 static int getAppliedOffset(int y, int t, int distortEffect, short ampl, int ampl_accel, int s_freq, short s_freq_accel, short compr, short compr_accel, short speed)
 {
-	double C1 = 1 / 512.0;
-	double C2 = 8.0 * M_PI  / (1024 * 256);
-	double C3 = M_PI  / 60.0;
-	
-	// Compute "current" values of amplitude, frequency, and compression
-	short amplitude = (short)(ampl + ampl_accel * t * 2);
-	short frequency = (short)(s_freq + s_freq_accel * t * 2);
-	short compression = (short)(compr + compr_accel * t * 2);
+    double C1 = 1 / 512.0;
+    double C2 = 8.0 * M_PI  / (1024 * 256);
+    double C3 = M_PI  / 60.0;
+    
+    // Compute "current" values of amplitude, frequency, and compression
+    short amplitude = (short)(ampl + ampl_accel * t * 2);
+    short frequency = (short)(s_freq + s_freq_accel * t * 2);
+    short compression = (short)(compr + compr_accel * t * 2);
 
-	// Compute the value of the sinusoidal line offset function
-	int S = (int)(C1 * amplitude * sin(C2 * frequency * y + C3 * speed * t));
+    // Compute the value of the sinusoidal line offset function
+    int S = (int)(C1 * amplitude * sin(C2 * frequency * y + C3 * speed * t));
 
-	if (distortEffect == 1)
-	{
-		return S;
-	}
-	else if(distortEffect == 2)
-	{
-		return (y % 2) == 0? -S : S;
-	}
-	else if (distortEffect == 3)
-	{
-		int L = (int)(y * (1 + compression / 256.0) + S) % 256;
-		if (L < 0) L = 256 + L;
-		if (L > 255) L = 256 - L;
+    if (distortEffect == 1)
+    {
+        return S;
+    }
+    else if(distortEffect == 2)
+    {
+        return (y % 2) == 0? -S : S;
+    }
+    else if (distortEffect == 3)
+    {
+        int L = (int)(y * (1 + compression / 256.0) + S) % 256;
+        if (L < 0) L = 256 + L;
+        if (L > 255) L = 256 - L;
 
-		return L;
-	}
+        return L;
+    }
 
-	return 0;
+    return 0;
 }
 
 // Computes a distortion of the source and overlays it on a destination bitmap
 // with specified alpha
 JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_Distorter_ComputeFrame(JNIEnv* env, jobject obj, jobject dst, jobject src, jint distortEffect, jint letterbox, jint ticks, jfloat alpha, jint erase, jshort ampl, jint ampl_accel, jshort s_freq, jint s_freq_accel, jshort compr, jshort compr_accel, jshort speed)
 {
-	AndroidBitmapInfo dinfo;
-	AndroidBitmapInfo sinfo;
-	void* dpixels;
-	void* spixels;
-	int ret;
+    AndroidBitmapInfo dinfo;
+    AndroidBitmapInfo sinfo;
+    void* dpixels;
+    void* spixels;
+    int ret;
 
-	if ((ret = AndroidBitmap_getInfo(env, dst, &dinfo)) < 0) {
-		LOGE("AndroidBitmap_getInfo() in ComputeFrame failed for DST -- error=%d", ret);
-		return;
-	}
+    if ((ret = AndroidBitmap_getInfo(env, dst, &dinfo)) < 0) {
+        LOGE("AndroidBitmap_getInfo() in ComputeFrame failed for DST -- error=%d", ret);
+        return;
+    }
 
-	if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+    if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("D-Bitmap format is not RGB_8888 ! Instead, it's %d", dinfo.format);
         return;
     }
 
-	if ((ret = AndroidBitmap_lockPixels(env, dst, &dpixels)) < 0) {
-		LOGE("AndroidBitmap_lockPixels() in ComputeFrame failed for DST -- error=%d", ret);
-	}
+    if ((ret = AndroidBitmap_lockPixels(env, dst, &dpixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() in ComputeFrame failed for DST -- error=%d", ret);
+    }
 
-	if ((ret = AndroidBitmap_getInfo(env, src, &sinfo)) < 0) {
-		LOGE("AndroidBitmap_getInfo() in ComputeFrame failed for SRC -- error=%d", ret);
-		return;
-	}
+    if ((ret = AndroidBitmap_getInfo(env, src, &sinfo)) < 0) {
+        LOGE("AndroidBitmap_getInfo() in ComputeFrame failed for SRC -- error=%d", ret);
+        return;
+    }
 
-	if (sinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+    if (sinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("S-Bitmap format is not RGB_8888 ! Instead, it's %d", sinfo.format);
         return;
     }
 
-	if ((ret = AndroidBitmap_lockPixels(env, src, &spixels)) < 0) {
-		LOGE("AndroidBitmap_lockPixels() in ComputeFrame failed for SRC -- error=%d", ret);
-	}
+    if ((ret = AndroidBitmap_lockPixels(env, src, &spixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() in ComputeFrame failed for SRC -- error=%d", ret);
+    }
 
 
-	#ifdef DEBUG
-		LOGI("AndroidBitmap_getInfo() %d", ret);
-	    LOGI("D-Bitmap format is %d", dinfo.format);
-		LOGI("AndroidBitmap_lockPixels() %d", ret);
-		LOGI("AndroidBitmap_getInfo() %d", ret);
-	    LOGI("S-Bitmap format is %d", sinfo.format);
-		LOGI("AndroidBitmap_lockPixels() %d", ret);
-	#endif
+    #ifdef DEBUG
+        LOGD("AndroidBitmap_getInfo() %d", ret);
+        LOGD("D-Bitmap format is %d", dinfo.format);
+        LOGD("AndroidBitmap_lockPixels() %d", ret);
+        LOGD("AndroidBitmap_getInfo() %d", ret);
+        LOGD("S-Bitmap format is %d", sinfo.format);
+        LOGD("AndroidBitmap_lockPixels() %d", ret);
+    #endif
 
-	int dstStride = dinfo.stride;
-	int srcStride = sinfo.stride;
+    uint32_t dstStride = dinfo.stride;
+    uint32_t srcStride = sinfo.stride;
 
-	BYTE* bdst = (BYTE*)dpixels;
-	BYTE* bsrc = (BYTE*)spixels;
+    uint8_t* bdst = (uint8_t*)dpixels;
+    uint8_t* bsrc = (uint8_t*)spixels;
 
-	/*
-		Given the list of 4 distortions and the tick count, decide which
-		effect to use:
+    /*
+        Given the list of 4 distortions and the tick count, decide which
+        effect to use:
 
-		Basically, we have 4 effects, each possibly with a duration.
+        Basically, we have 4 effects, each possibly with a duration.
 
-		Evaluation order is: 1, 2, 3, 0
+        Evaluation order is: 1, 2, 3, 0
 
-		If the first effect is null, control transitions to the second effect.
-		If the first and second effects are null, no effect occurs.
-		If any other effect is null, the sequence is truncated.
-		If a non-null effect has a zero duration, it will not be switched
-		away from.
+        If the first effect is null, control transitions to the second effect.
+        If the first and second effects are null, no effect occurs.
+        If any other effect is null, the sequence is truncated.
+        If a non-null effect has a zero duration, it will not be switched
+        away from.
 
-		Essentially, this configuration sets up a precise and repeating
-		sequence of between 0 and 4 different distortion effects. Once we
-		compute the sequence, computing the particular frame of which distortion
-		to use becomes easy; simply mod the tick count by the total duration
-		of the effects that are used in the sequence, then check the remainder
-		against the cumulative durations of each effect.
+        Essentially, this configuration sets up a precise and repeating
+        sequence of between 0 and 4 different distortion effects. Once we
+        compute the sequence, computing the particular frame of which distortion
+        to use becomes easy; simply mod the tick count by the total duration
+        of the effects that are used in the sequence, then check the remainder
+        against the cumulative durations of each effect.
 
-		I guess the trick is to be sure that my description above is correct.
+        I guess the trick is to be sure that my description above is correct.
 
-		Heh.
-	*/
+        Heh.
+    */
 
-	int x = 0, y = 0;
+    int x = 0, y = 0;
 
-	for (y = 0; y < 224; y++)
-	{
-		int S = getAppliedOffset(y, ticks, distortEffect, ampl, ampl_accel, s_freq, s_freq_accel, compr, compr_accel, speed); 
-		int L = y;
+    for (y = 0; y < 224; y++)
+    {
+        int S = getAppliedOffset(y, ticks, distortEffect, ampl, ampl_accel, s_freq, s_freq_accel, compr, compr_accel, speed); 
+        int L = y;
 
-		if (distortEffect == 3) {
-			L = S;
-		}
-		
-		for (x = 0; x < 256; x++)
-		{
-			int bpos = x * 4 + y * dstStride;
-			if (y < letterbox || y > 224 - letterbox)
-			{
-				bdst[bpos + 2 ] = 0;
-				bdst[bpos + 1 ] = 0;
-				bdst[bpos + 0 ] = 0;
-				continue;
-			}
-			int dx = x;
+        if (distortEffect == 3) {
+            L = S;
+        }
+        
+        for (x = 0; x < 256; x++)
+        {
+            int bpos = x * 4 + y * dstStride;
+            if (y < letterbox || y > 224 - letterbox)
+            {
+                bdst[bpos + 2 ] = 0;
+                bdst[bpos + 1 ] = 0;
+                bdst[bpos + 0 ] = 0;
+                continue;
+            }
+            int dx = x;
 
-			if (distortEffect == 1
-					|| distortEffect == 2)
-			{
-				dx = (x + S) % 256;
-				if (dx < 0) dx = 256 + dx;
-				if (dx > 255) dx = 256 - dx;
-			}
+            if (distortEffect == 1
+                    || distortEffect == 2)
+            {
+                dx = (x + S) % 256;
+                if (dx < 0) dx = 256 + dx;
+                if (dx > 255) dx = 256 - dx;
+            }
 
-			int spos = dx * 4 + L * srcStride;
+            int spos = dx * 4 + L * srcStride;
 
-			// Either copy or add to the destination bitmap
-			if (erase == 1)
-			{
-				bdst[bpos + 2 ] = (BYTE)(alpha * bsrc[spos + 2 ]);
-				bdst[bpos + 1 ] = (BYTE)(alpha * bsrc[spos + 1 ]);
-				bdst[bpos + 0 ] = (BYTE)(alpha * bsrc[spos + 0 ]);
-			}
-			else
-			{
-				bdst[bpos + 2 ] += (BYTE)(alpha * bsrc[spos + 2 ]);
-				bdst[bpos + 1 ] += (BYTE)(alpha * bsrc[spos + 1 ]);
-				bdst[bpos + 0 ] += (BYTE)(alpha * bsrc[spos + 0 ]);
-			}
-		}
-	}
+            // Either copy or add to the destination bitmap
+            if (erase == 1)
+            {
+                bdst[bpos + 2 ] = (uint8_t)(alpha * bsrc[spos + 2 ]);
+                bdst[bpos + 1 ] = (uint8_t)(alpha * bsrc[spos + 1 ]);
+                bdst[bpos + 0 ] = (uint8_t)(alpha * bsrc[spos + 0 ]);
+            }
+            else
+            {
+                bdst[bpos + 2 ] += (uint8_t)(alpha * bsrc[spos + 2 ]);
+                bdst[bpos + 1 ] += (uint8_t)(alpha * bsrc[spos + 1 ]);
+                bdst[bpos + 0 ] += (uint8_t)(alpha * bsrc[spos + 0 ]);
+            }
+        }
+    }
 
-	AndroidBitmap_unlockPixels(env, dst);
-	AndroidBitmap_unlockPixels(env, src);
+    AndroidBitmap_unlockPixels(env, dst);
+    AndroidBitmap_unlockPixels(env, src);
 }
 
-static void DrawTile(JNIEnv * env, jobject obj, BYTE* dat, uint32_t stride,
+static void DrawTile(JNIEnv * env, jobject obj, void* pixels, uint32_t stride,
 uint16_t x, uint16_t y, jobject pal, uint32_t tile, uint32_t subpal, jboolean vflip, jboolean hflip,
 jmethodID getRGBPal_mid) {
-	uint32_t  i, j, px, py;
-	
-	for (i = 0; i < 8; i++) {
-		for (j = 0; j < 8; j++) {
-			jint rgbArray = (*env)->CallIntMethod(env, obj, getRGBPal_mid, pal, tile, subpal, i, j);
-			
-			if (hflip == 1)
-				px = x + 7 - i;
-			else
-				px = x + i;
+    uint32_t  i, j, px, py;
+    uint8_t*  line = (uint8_t*)pixels;
 
-			if (vflip == 1)
-				py = y + 7 - j;
-			else
-				py = y + j;
+    for (i = 0; i < 8; i++) {
+        for (j = 0; j < 8; j++) {
+            jint rgbArray = (*env)->CallIntMethod(env, obj, getRGBPal_mid, pal, tile, subpal, i, j);
+            
+            if (hflip == 1)
+                px = x + 7 - i;
+            else
+                px = x + i;
 
-			int pos = (px * 4) + (py * stride);
-			
-			dat[pos + 0] = (rgbArray >> 16) & 0xFF;
-			dat[pos + 1] = (rgbArray >> 8) & 0xFF;
-			dat[pos + 2] = (rgbArray) & 0xFF;
-		}
-	}
+            if (vflip == 1)
+                py = y + 7 - j;
+            else
+                py = y + j;
+
+            int pos = (px * 4) + (py * stride);
+            
+            line[pos + 0] = (rgbArray >> 16) & 0xFF;
+            line[pos + 1] = (rgbArray >> 8) & 0xFF;
+            line[pos + 2] = (rgbArray) & 0xFF;
+            //line[pos + 3] = 0;
+        }
+    }
 }
 
 JNIEXPORT void JNICALL Java_com_miadzin_livewallpaper_earthbound_romlib_RomGraphics_DrawInC(JNIEnv * env, jobject obj, jobject bmp, jobject pal, jshortArray arr, jint arrLength)
 {
-	AndroidBitmapInfo dinfo;
-	void* dpixels;
-	int ret = -1;
+    AndroidBitmapInfo dinfo;
+    void* dpixels;
+    int ret = -1;
 
-	static jclass cls = 0;
+    static jclass cls = 0;
 
-	if ((ret = AndroidBitmap_getInfo(env, bmp, &dinfo)) < 0) {
-		LOGE("AndroidBitmap_getInfo() in DrawInC failed ! error=%d", ret);
-		return;
-	}
-	
-	if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
+    if ((ret = AndroidBitmap_getInfo(env, bmp, &dinfo)) < 0) {
+        LOGE("AndroidBitmap_getInfo() in DrawInC failed ! error=%d", ret);
+        return;
+    }
+    
+    if (dinfo.format != ANDROID_BITMAP_FORMAT_RGBA_8888) {
         LOGE("Bitmap format is not RGB_8888 ! Instead, it's %d", dinfo.format);
         return;
     }
 
-	if ((ret = AndroidBitmap_lockPixels(env, bmp, &dpixels)) < 0) {
-		LOGE("AndroidBitmap_lockPixels() in DrawInC failed ! error=%d", ret);
-		return;
-	}
+    if ((ret = AndroidBitmap_lockPixels(env, bmp, &dpixels)) < 0) {
+        LOGE("AndroidBitmap_lockPixels() in DrawInC failed ! error=%d", ret);
+        return;
+    }
 
-	#ifdef DEBUG
-		LOGI("AndroidBitmap_getInfo() %d", ret);
-        LOGI("Bitmap format %d", dinfo.format);
-		LOGI("AndroidBitmap_lockPixels() %d", ret);
-	#endif
+    #ifdef DEBUG
+        LOGD("AndroidBitmap_getInfo() %d", ret);
+        LOGD("Bitmap format %d", dinfo.format);
+        LOGD("AndroidBitmap_lockPixels() %d", ret);
+    #endif
 
-	uint32_t stride = dinfo.stride;
-	
-	jshort buffer[arrLength];
-	(*env)->GetShortArrayRegion(env, arr, 0, arrLength, buffer);
+    uint32_t stride = dinfo.stride;
 
-	#ifdef DEBUG
-		LOGI("Array length is %d", arrLength);
-		LOGI("Width is %d", dinfo.width);
-		LOGI("Height is %d", dinfo.height);
-	#endif
+    jshort buffer[arrLength];   
+    (*env)->GetShortArrayRegion(env, arr, 0, arrLength, (jshort*) buffer);
 
-	uint32_t block = 0, tile = 0, subpal = 0;
-	uint16_t i = 0, j = 0, n = 0, b1 = 0, b2 = 0;
-	jboolean vflip = 0, hflip = 0;
+    #ifdef DEBUG
+        LOGD("Array length is %d", arrLength);
+        LOGD("Width is %d", dinfo.width);
+        LOGD("Height is %d", dinfo.height);
+    #endif
 
-	jclass cls1 = (*env)->GetObjectClass(env, obj);
-	//cls = (*env)->NewGlobalRef(env, cls1);
-	//(*env)->DeleteLocalRef(env, cls1);
-	jmethodID getRGBPal_mid = (*env)->GetMethodID(env, cls1, "getRGBPal", "(Lcom/miadzin/livewallpaper/earthbound/romlib/Palette;IIII)I");
+    uint32_t block = 0, tile = 0, subpal = 0;
+    uint16_t i = 0, j = 0, n = 0, b1 = 0, b2 = 0;
+    jboolean vflip = 0, hflip = 0;
 
-	for (i = 0; i < 32; i++)
-	{
-		for (j = 0; j < 32; j++)
-		{
-			n = j * 32 + i;
+    jclass class = (*env)->GetObjectClass(env, obj);
+    //cls = (*env)->NewGlobalRef(env, cls1);
+    //(*env)->DeleteLocalRef(env, cls1);
+    jmethodID getRGBPal_mid = (*env)->GetMethodID(env, class, "getRGBPal", "(Lcom/miadzin/livewallpaper/earthbound/romlib/Palette;IIII)I");
 
-			b1 = buffer[n * 2];
-			b2 = buffer[n * 2 + 1] << 8;
-			block = b1 + b2;
+    // for each pixel in the 256x256 grid, we need to render the image found in the .dat file
+    for (i = 0; i < 32; i++)
+    {
+        for (j = 0; j < 32; j++)
+        {
+            n = j * 32 + i;
 
-			tile = block & 0x3FF;
-			vflip = (block & 0x8000) != 0;
-			hflip = (block & 0x4000) != 0;
-			subpal = (block >> 10) & 7;
-		
-			DrawTile(env, obj, (BYTE *) dpixels, stride, i * 8, j * 8, pal, tile, subpal, vflip, hflip, getRGBPal_mid);
-		}
-	}
-	
-	#ifdef DEBUG
-		LOGI("Ok, unlocking pixels...");
-	#endif
+            b1 = buffer[n * 2];
+            b2 = buffer[n * 2 + 1] << 8;
+            block = b1 + b2;
 
-	AndroidBitmap_unlockPixels(env, bmp);
+            tile = block & 0x3FF;
+            vflip = (block & 0x8000) != 0;
+            hflip = (block & 0x4000) != 0;
+            subpal = (block >> 10) & 7;
+        
+            DrawTile(env, obj, dpixels, stride, i * 8, j * 8, pal, tile, subpal, vflip, hflip, getRGBPal_mid);
+        }
+    }
+    
+    #ifdef DEBUG
+        LOGD("Ok, unlocking pixels...");
+    #endif
+
+    AndroidBitmap_unlockPixels(env, bmp);
 }

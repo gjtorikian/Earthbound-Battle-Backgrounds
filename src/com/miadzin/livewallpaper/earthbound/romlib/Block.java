@@ -101,7 +101,7 @@ public class Block
 	{
 		value = (byte)blockData[pointer++];
 		if (value > 128)
-			Log.i(LOG_TAG, "Read " + value + " and it should be " + String.valueOf(value & 0xFF));
+			Log.w(LOG_TAG, "Read " + value + " and it should be " + String.valueOf(value & 0xFF));
 		return value;
 	} 
 

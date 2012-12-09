@@ -1,2 +1,5 @@
 src/com/android/
 src/com/miadzin/livewallpaper/earthbound/licensing/
+libs/
+obj/
+bin/
