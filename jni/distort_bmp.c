@@ -30,23 +30,21 @@
 
 //#define DEBUG
 
-//typedef unsigned char BYTE;
-
-    /*
-        Evaluates the distortion effect at the given destination line and
-        time value and returns the computed offset value.
-        
-        If the distortion mode is horizontal, this offset should be interpreted
-        as the number of pixels to offset the given line's starting x position.
-        
-        If the distortion mode is vertical, this offset should be interpreted as
-        the y-coordinate of the line from the source bitmap to draw at the given
-        y-coordinate in the destination bitmap.
-        
-        @param y The y-coordinate of the destination line to evaluate for
-        @param t The number of ticks since beginning animation
-        @return The distortion offset for the given (y,t) coordinates
-    */
+/*
+    Evaluates the distortion effect at the given destination line and
+    time value and returns the computed offset value.
+    
+    If the distortion mode is horizontal, this offset should be interpreted
+    as the number of pixels to offset the given line's starting x position.
+    
+    If the distortion mode is vertical, this offset should be interpreted as
+    the y-coordinate of the line from the source bitmap to draw at the given
+    y-coordinate in the destination bitmap.
+    
+    @param y The y-coordinate of the destination line to evaluate for
+    @param t The number of ticks since beginning animation
+    @return The distortion offset for the given (y,t) coordinates
+*/
 static int getAppliedOffset(int y, int t, int distortEffect, short ampl, int ampl_accel, int s_freq, short s_freq_accel, short compr, short compr_accel, short speed)
 {
     double C1 = 1 / 512.0;

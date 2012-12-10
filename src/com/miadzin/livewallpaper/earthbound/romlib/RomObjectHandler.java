@@ -19,8 +19,8 @@
 
 package com.miadzin.livewallpaper.earthbound.romlib;
 
-public abstract class RomObjectHandler
-{
+public abstract class RomObjectHandler {
 	public abstract void ReadClass(Rom rom) throws Exception;
+
 	public abstract void WriteClass(Rom rom);
 }

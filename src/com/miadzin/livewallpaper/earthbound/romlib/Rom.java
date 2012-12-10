@@ -30,11 +30,11 @@ import android.util.Log;
 
 public class Rom {
 	private static String LOG_TAG = "Rom";
-	
+
 	// INTERNAL DATA
-	
+
 	private String filename;
-	
+
 	public short[] romData;
 	private boolean loaded;
 
@@ -48,7 +48,7 @@ public class Rom {
 	}
 
 	// Properties
-	
+
 	public boolean getIsLoaded() {
 		return loaded;
 	}
@@ -89,16 +89,20 @@ public class Rom {
 		loaded = true;
 
 		for (Entry<Type, RomObjectHandler> romh : handlers.entrySet()) {
-			Log.d(LOG_TAG, "Reading "	+ romh.getValue().getClass().getCanonicalName());
+			Log.d(LOG_TAG, "Reading "
+					+ romh.getValue().getClass().getCanonicalName());
 			romh.getValue().ReadClass(this);
-			Log.d(LOG_TAG, "Read "	+ romh.getValue().getClass().getCanonicalName());
+			Log.d(LOG_TAG, "Read "
+					+ romh.getValue().getClass().getCanonicalName());
 		}
 	}
 
 	/**
-	 Adds an object to the ROM container.
-	 * @param o The RomObject to add
-	*/
+	 * Adds an object to the ROM container.
+	 * 
+	 * @param o
+	 *            The RomObject to add
+	 */
 
 	public void Add(RomObject o) {
 		Type type = o.getClass();
@@ -133,13 +137,16 @@ public class Rom {
 	}
 
 	/**
-	 Returns a collection of all RomObjects of a given type contained
-	 within this ROM.
-	 * @param type The type of RomObjects to retrieve
-	 * @param typeID The string identifying the type of RomObjects to retrieve
+	 * Returns a collection of all RomObjects of a given type contained within
+	 * this ROM.
+	 * 
+	 * @param type
+	 *            The type of RomObjects to retrieve
+	 * @param typeID
+	 *            The string identifying the type of RomObjects to retrieve
 	 * 
 	 * @return A List of RomObjects
-	*/
+	 */
 
 	public List<RomObject> GetObjectsByType(Type type) {
 		return objects.get(type);
@@ -154,16 +161,17 @@ public class Rom {
 	}
 
 	/**
-	 Returns a readable block at the given location.
-	 Nominally, should also handle tracking free space depending on
-	 the type of read requested. (i.e., an object may be interested in
-	 read-only access anywhere, but if an object is reading its own data,
-	 it should specify this so the Rom can mark the read data as "free")
+	 * Returns a readable block at the given location. Nominally, should also
+	 * handle tracking free space depending on the type of read requested.
+	 * (i.e., an object may be interested in read-only access anywhere, but if
+	 * an object is reading its own data, it should specify this so the Rom can
+	 * mark the read data as "free")
 	 * 
-	 * @param location The address from which to read
+	 * @param location
+	 *            The address from which to read
 	 * 
 	 * @return A readable block
-	*/
+	 */
 
 	public Block ReadBlock(int location) {
 		// NOTE: there's no address conversion implemented yet;
@@ -176,39 +184,46 @@ public class Rom {
 	}
 
 	/**
-	 Allocates a writeable block using the Unrestricted storage model.
-	 The resulting block may be located anywhere in the ROM.
+	 * Allocates a writeable block using the Unrestricted storage model. The
+	 * resulting block may be located anywhere in the ROM.
 	 * 
 	 * 
-	
-	 @param size The size, in bytes, required for this block
-	 @return A writeable block, or null if allocation failed
-	*/
+	 @param size
+	 *            The size, in bytes, required for this block
+	 * @return A writeable block, or null if allocation failed
+	 */
 	public Block AllocateBlock(int size) {
 		return null;
 	}
 
 	/**
-	 Allocates a writeable block using the Fixed storage model. The
-	 resulting block is always located at the given address.
-	
-	 @param size The size, in bytes, required for this block
-	 @param location The starting address of the desired block
-	 @return A writeable block of size bytes in the specified location, or null if allocation failed
-	*/
+	 * Allocates a writeable block using the Fixed storage model. The resulting
+	 * block is always located at the given address.
+	 * 
+	 * @param size
+	 *            The size, in bytes, required for this block
+	 * @param location
+	 *            The starting address of the desired block
+	 * @return A writeable block of size bytes in the specified location, or
+	 *         null if allocation failed
+	 */
 	public Block AllocateFixedBlock(int size, int location) {
 
 		return null;
 	}
 
 	/**
-	 Allocates a writeable block using the Local storage model. Reserves a block
-	 of space within a previously allocated local segment.
-	
-	 @param size The size, in bytes, required for this block
-	 @param ticket A local segment identifier previously obtained from AllocateLocalSegment, identifying a pre-allocated space that has been reserved for a particular set of local-access objects
-	 @return A writeable block of size bytes in the given local segment.
-*/
+	 * Allocates a writeable block using the Local storage model. Reserves a
+	 * block of space within a previously allocated local segment.
+	 * 
+	 * @param size
+	 *            The size, in bytes, required for this block
+	 * @param ticket
+	 *            A local segment identifier previously obtained from
+	 *            AllocateLocalSegment, identifying a pre-allocated space that
+	 *            has been reserved for a particular set of local-access objects
+	 * @return A writeable block of size bytes in the given local segment.
+	 */
 	public Block AllocateLocalBlock(int size, LocalTicket ticket) {
 		return null;
 	}
@@ -249,23 +264,25 @@ public class Rom {
 
 	// This is an internal optimization for the comp/decomp methods.
 	// Every element in this array is the binary reverse of its index.
-	public static short[] bitrevs = new short[] {	
-		0,   128, 64,  192, 32,  160, 96,  224, 16,  144, 80,  208, 48,  176, 112, 240, 
-		8,   136, 72,  200, 40,  168, 104, 232, 24,  152, 88,  216, 56,  184, 120, 248, 
-		4,   132, 68,  196, 36,  164, 100, 228, 20,  148, 84,  212, 52,  180, 116, 244, 
-		12,  140, 76,  204, 44,  172, 108, 236, 28,  156, 92,  220, 60,  188, 124, 252, 
-		2,   130, 66,  194, 34,  162, 98,  226, 18,  146, 82,  210, 50,  178, 114, 242, 
-		10,  138, 74,  202, 42,  170, 106, 234, 26,  154, 90,  218, 58,  186, 122, 250, 
-		6,   134, 70,  198, 38,  166, 102, 230, 22,  150, 86,  214, 54,  182, 118, 246, 
-		14,  142, 78,  206, 46,  174, 110, 238, 30,  158, 94,  222, 62,  190, 126, 254, 
-		1,   129, 65,  193, 33,  161, 97,  225, 17,  145, 81,  209, 49,  177, 113, 241, 
-		9,   137, 73,  201, 41,  169, 105, 233, 25,  153, 89,  217, 57,  185, 121, 249, 
-		5,   133, 69,  197, 37,  165, 101, 229, 21,  149, 85,  213, 53,  181, 117, 245, 
-		13,  141, 77,  205, 45,  173, 109, 237, 29,  157, 93,  221, 61,  189, 125, 253, 
-		3,   131, 67,  195, 35,  163, 99,  227, 19,  147, 83,  211, 51,  179, 115, 243, 
-		11,  139, 75,  203, 43,  171, 107, 235, 27,  155, 91,  219, 59,  187, 123, 251, 
-		7,   135, 71,  199, 39,  167, 103, 231, 23,  151, 87,  215, 55,  183, 119, 247, 
-		15,  143, 79,  207, 47,  175, 111, 239, 31,  159, 95,  223, 63,  191, 127, 255,  };
+	public static short[] bitrevs = new short[] { 0, 128, 64, 192, 32, 160, 96,
+			224, 16, 144, 80, 208, 48, 176, 112, 240, 8, 136, 72, 200, 40, 168,
+			104, 232, 24, 152, 88, 216, 56, 184, 120, 248, 4, 132, 68, 196, 36,
+			164, 100, 228, 20, 148, 84, 212, 52, 180, 116, 244, 12, 140, 76,
+			204, 44, 172, 108, 236, 28, 156, 92, 220, 60, 188, 124, 252, 2,
+			130, 66, 194, 34, 162, 98, 226, 18, 146, 82, 210, 50, 178, 114,
+			242, 10, 138, 74, 202, 42, 170, 106, 234, 26, 154, 90, 218, 58,
+			186, 122, 250, 6, 134, 70, 198, 38, 166, 102, 230, 22, 150, 86,
+			214, 54, 182, 118, 246, 14, 142, 78, 206, 46, 174, 110, 238, 30,
+			158, 94, 222, 62, 190, 126, 254, 1, 129, 65, 193, 33, 161, 97, 225,
+			17, 145, 81, 209, 49, 177, 113, 241, 9, 137, 73, 201, 41, 169, 105,
+			233, 25, 153, 89, 217, 57, 185, 121, 249, 5, 133, 69, 197, 37, 165,
+			101, 229, 21, 149, 85, 213, 53, 181, 117, 245, 13, 141, 77, 205,
+			45, 173, 109, 237, 29, 157, 93, 221, 61, 189, 125, 253, 3, 131, 67,
+			195, 35, 163, 99, 227, 19, 147, 83, 211, 51, 179, 115, 243, 11,
+			139, 75, 203, 43, 171, 107, 235, 27, 155, 91, 219, 59, 187, 123,
+			251, 7, 135, 71, 199, 39, 167, 103, 231, 23, 151, 87, 215, 55, 183,
+			119, 247, 15, 143, 79, 207, 47, 175, 111, 239, 31, 159, 95, 223,
+			63, 191, 127, 255, };
 
 	// Do not try to understand what this is doing. It will hurt you.
 	// The only documentation for this decompression routine is a 65816
@@ -285,15 +302,17 @@ public class Rom {
 	// public static
 
 	/**
-	
-	
-	 @param start 
-	 @param data
-	 @param output Must already be allocated with at least enough space
-	 @param read "Out" parameter which receives the number of bytes of compressed data read
-	 @return The size of the decompressed data if successful, null otherwise
-	  */
-	public static short[] Decomp(int start, short[] data, short[] output, int read) {
+	 * @param start
+	 * @param data
+	 * @param output
+	 *            Must already be allocated with at least enough space
+	 * @param read
+	 *            "Out" parameter which receives the number of bytes of
+	 *            compressed data read
+	 * @return The size of the decompressed data if successful, null otherwise
+	 */
+	public static short[] Decomp(int start, short[] data, short[] output,
+			int read) {
 		int maxlen = output.length;
 		int pos = start;
 		int bpos = 0, bpos2 = 0;
@@ -309,11 +328,10 @@ public class Rom {
 
 			int cmdtype = (data[pos]) >> 5;
 			int len = ((data[pos]) & 0x1F) + 1;
-	
+
 			if (cmdtype == 7) {
 				cmdtype = ((data[pos]) & 0x1C) >> 2;
-				len = (((data[pos]) & 3) << 8)
-						+ (data[pos + 1]) + 1;
+				len = (((data[pos]) & 3) << 8) + (data[pos + 1]) + 1;
 				pos++;
 			}
 
@@ -333,10 +351,10 @@ public class Rom {
 					read = pos - start + 1;
 					return null;
 					// return -2;
-				} 
+				}
 				pos += 2;
 			}
-			
+
 			switch (cmdtype) {
 			case 0: // Uncompressed block
 				while (len-- != 0)
@@ -417,7 +435,7 @@ public class Rom {
 	public static int GetCompressedSize(int start, short[] data) {
 		int pos = start;
 		int bpos = 0, bpos2 = 0;
-		
+
 		while ((data[pos]) != 0xFF) {
 			// Data overflow before end of compressed data
 			if (pos >= data.length)
@@ -428,11 +446,9 @@ public class Rom {
 
 			if (cmdtype == 7) {
 				cmdtype = ((data[pos]) & 0x1C) >> 2;
-				len = (((data[pos]) & 3) << 8)
-						+ (data[pos + 1]) + 1;
+				len = (((data[pos]) & 3) << 8) + (data[pos + 1]) + 1;
 				pos++;
 			}
-
 
 			if (bpos + len < 0)
 				return -1;

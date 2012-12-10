@@ -24,70 +24,63 @@ import android.util.Log;
 /*
  * Base class for most game object classes
  */
-public abstract class RomObject
-{
-    private Rom parent;
+public abstract class RomObject {
+	private Rom parent;
 	private String id;
 
 	protected int address;
 	protected int index;
 
-    /*
-     * Properties
-     */
-    public Rom getParent()
-    {
-    	return parent;
-    }
-    
-    public void setParent(Rom value) {
-    	parent = value;
-    }
+	/*
+	 * Properties
+	 */
+	public Rom getParent() {
+		return parent;
+	}
 
-	public String getID()
-	{
+	public void setParent(Rom value) {
+		parent = value;
+	}
+
+	public String getID() {
 		return id;
 	}
-	
+
 	public void setID(String value) {
 		id = value;
 	}
-	
-	public int getIndex()
-	{
+
+	public int getIndex() {
 		return index;
 	}
-	
-	public int getAddress()
-	{
+
+	public int getAddress() {
 		return address;
 	}
 
 	/*
 	 * Methods
 	 */
-	public static void ReadClassFromRom(Rom rom) throws Exception
-	{
-		throw new Exception("RomObject classes must implement a new static ReadClass method!");
+	public static void ReadClassFromRom(Rom rom) throws Exception {
+		throw new Exception(
+				"RomObject classes must implement a new static ReadClass method!");
 	}
 
-	public static void WriteClass(Rom rom) throws Exception
-	{
-		throw new Exception("RomObject classes must implement a new static WriteClass method!");
+	public static void WriteClass(Rom rom) throws Exception {
+		throw new Exception(
+				"RomObject classes must implement a new static WriteClass method!");
 	}
 
+	// Called when this object is added to a ROM, I guess
+	public void AddToRom() {
 
-    // Called when this object is added to a ROM, I guess
-    public void AddToRom()
-    {
+	}
 
-    }
-
-    public void showType()
-    {
-        Log.i("RomObject", "I am a " + this.getClass().toString());
-    }
+	public void showType() {
+		Log.i("RomObject", "I am a " + this.getClass().toString());
+	}
 
 	public abstract void Read(int index) throws Exception;
+
 	public abstract void Write(int index) throws Exception;
 }

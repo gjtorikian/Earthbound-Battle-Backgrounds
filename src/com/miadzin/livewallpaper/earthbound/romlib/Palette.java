@@ -28,11 +28,13 @@ public abstract class Palette extends RomObject {
 	private final String LOG_TAG = "Palette";
 
 	/**
-	 Gets an array of colors representing one of this palette's subpalettes.
-	 * @param pal The index of the subpalette to retrieve.
+	 * Gets an array of colors representing one of this palette's subpalettes.
+	 * 
+	 * @param pal
+	 *            The index of the subpalette to retrieve.
 	 * 
 	 * @return An array containing the colors of the specified subpalette.
-	*/
+	 */
 	public int[] getColors(int pal) {
 		return colors[pal];
 	}
@@ -40,10 +42,10 @@ public abstract class Palette extends RomObject {
 	public int[][] getColorMatrix() {
 		return colors;
 	}
-	
+
 	/**
-		Gets or sets the bit depth of this palette.
-	*/
+	 * Gets or sets the bit depth of this palette.
+	 */
 	public int getBitsPerPixel() {
 		return bpp;
 	}
@@ -53,12 +55,16 @@ public abstract class Palette extends RomObject {
 	}
 
 	/**
-	 Internal function - reads palette data from the given block into
-	this palette's colors array.
-	 * @param block Block to read palette data from.
-	 * @param bpp Bit depth; must be either 2 or 4.
-	 * @param count Number of subpalettes to read.
-	*/
+	 * Internal function - reads palette data from the given block into this
+	 * palette's colors array.
+	 * 
+	 * @param block
+	 *            Block to read palette data from.
+	 * @param bpp
+	 *            Bit depth; must be either 2 or 4.
+	 * @param count
+	 *            Number of subpalettes to read.
+	 */
 	protected void ReadPalette(Block block, int bpp, int count)
 			throws Exception {
 		if (bpp != 2 && bpp != 4)
@@ -74,7 +80,7 @@ public abstract class Palette extends RomObject {
 			colors[pal] = new int[(int) Math.pow(2, bpp)];
 			for (int i = 0; i < (int) Math.pow(2, bpp); i++) {
 				int clr16 = block.ReadDoubleShort();
-				
+
 				short b = (short) (((clr16 >> 10) & 31) * 8);
 				short g = (short) (((clr16 >> 5) & 31) * 8);
 				short r = (short) ((clr16 & 31) * 8);

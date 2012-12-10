@@ -28,9 +28,9 @@ public class Sizeof {
 	private static final int SZ_REF = 4;
 
 	public static short convertToSignedShort(byte value) {
-		return (short) (value  & 0xFF);
+		return (short) (value & 0xFF);
 	}
-	
+
 	public static int sizeof(boolean b) {
 		return 1;
 	}

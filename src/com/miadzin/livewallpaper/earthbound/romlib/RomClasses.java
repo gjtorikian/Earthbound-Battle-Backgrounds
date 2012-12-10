@@ -25,15 +25,15 @@ import java.util.HashMap;
 import android.util.Log;
 
 /**
- Used to maintain a registry of available ROM object types.
-
-This registry is static, but the class is declared non-static mainly
-so you can instantiate it and use its indexer. :P
-*/
+ * Used to maintain a registry of available ROM object types.
+ * 
+ * This registry is static, but the class is declared non-static mainly so you
+ * can instantiate it and use its indexer. :P
+ */
 public class RomClasses {
 	/**
-	 Represents a registered class entry within the ROM classes registry.
-	*/
+	 * Represents a registered class entry within the ROM classes registry.
+	 */
 	static public class Entry {
 		public String ID;
 		public Type Type;
@@ -57,19 +57,24 @@ public class RomClasses {
 	public static HashMap<String, Entry> types = new HashMap<String, Entry>();
 
 	/**
-		Gets a collection of entries for all registered classes.
-	*/
+	 * Gets a collection of entries for all registered classes.
+	 */
 	public static Iterable<Entry> getTypes() {
 		return types.values();
 	}
 
 	/**
-	 Registers a class of objects. A class must be registered before it
-	 can be used with (or by) PKHack's Rom class.
-	 
-	 @param id A string that identifies this type of object. (Example: "EnemyGroup")
-	 @param type The type of the class representing this object.
-	 @param handler A RomObjectHandler-derived object that will handle loading and storing elements of the class being registered.
+	 * Registers a class of objects. A class must be registered before it can be
+	 * used with (or by) PKHack's Rom class.
+	 * 
+	 * @param id
+	 *            A string that identifies this type of object. (Example:
+	 *            "EnemyGroup")
+	 * @param type
+	 *            The type of the class representing this object.
+	 * @param handler
+	 *            A RomObjectHandler-derived object that will handle loading and
+	 *            storing elements of the class being registered.
 	 */
 	public static void registerClass(String id, Type type, Type handler)
 			throws Exception {
@@ -78,18 +83,18 @@ public class RomClasses {
 		// Check for collisions
 		for (Entry e : types.values()) {
 			if (e.ID == id) {
-				//throw new Exception("Type ID '" + id
-				//		+ "' is already registered.");
+				// throw new Exception("Type ID '" + id
+				// + "' is already registered.");
 				added = true;
 			}
 			if (e.Type == type) {
-				//throw new Exception("Type '" + type.toString()
-					//	+ "' is already registered.");
+				// throw new Exception("Type '" + type.toString()
+				// + "' is already registered.");
 				added = true;
 			}
 			if (handler != null && e.Handler == handler) {
-				//throw new Exception("Handler Type '" + handler.toString()
-					//	+ "' is already registered."); 
+				// throw new Exception("Handler Type '" + handler.toString()
+				// + "' is already registered.");
 				added = true;
 			}
 		}

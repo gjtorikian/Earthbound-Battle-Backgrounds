@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.graphics.Bitmap;
-import android.graphics.Color;
 
 public abstract class RomGraphics extends RomObject {
 	private final String LOG_TAG = "RomGraphics";
@@ -58,8 +57,8 @@ public abstract class RomGraphics extends RomObject {
 	}
 
 	/**
-	 Internal function - builds the tile array from the gfx buffer.
-	*/
+	 * Internal function - builds the tile array from the gfx buffer.
+	 */
 	protected void BuildTiles() {
 		int n = gfxRomGraphics.length / (8 * bpp);
 
@@ -95,20 +94,20 @@ public abstract class RomGraphics extends RomObject {
 		final int pos = tiles.get(tile)[i][j];
 		final int colorChunk = pal.getColors(subpal)[pos];
 
-		//final int r = Color.red(colorChunk);
-		//final int g = Color.green(colorChunk);
-		//final int b = Color.blue(colorChunk);
+		// final int r = Color.red(colorChunk);
+		// final int g = Color.green(colorChunk);
+		// final int b = Color.blue(colorChunk);
 
 		return colorChunk;
-		//return new int[] { r, g, b };
+		// return new int[] { r, g, b };
 	}
 
 	/**
-	Internal function - reads graphics from the specified block
-	 and builds tileset.
-	 
-	@param block The block to read graphics data from
-	
+	 * Internal function - reads graphics from the specified block and builds
+	 * tileset.
+	 * 
+	 * @param block
+	 *            The block to read graphics data from
 	 */
 	protected void LoadGraphics(Block block) throws Exception {
 		gfxRomGraphics = block.Decomp();
@@ -117,9 +116,10 @@ public abstract class RomGraphics extends RomObject {
 	}
 
 	/**
-	 Internal function - reads arrangement from specified block
-	
-		@param block The block to read arrangement data from
+	 * Internal function - reads arrangement from specified block
+	 * 
+	 * @param block
+	 *            The block to read arrangement data from
 	 */
 	protected void LoadArrangement(Block block) throws Exception {
 		arrRomGraphics = block.Decomp();

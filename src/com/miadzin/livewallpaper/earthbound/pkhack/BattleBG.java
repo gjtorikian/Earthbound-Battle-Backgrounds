@@ -28,86 +28,82 @@ import com.miadzin.livewallpaper.earthbound.romlib.Rom;
 import com.miadzin.livewallpaper.earthbound.romlib.RomObject;
 import com.miadzin.livewallpaper.earthbound.romlib.RomObjectHandler;
 
- 
 public class BattleBG extends RomObject implements Type {
 	private final String LOG_TAG = "BattleBG";
 	/*
 	 * Background data table: $CADCA1
 	 * 
-	 * 17 bytes per entry:
-	 * ===================
-	 * 0	Graphics/Arrangement index
+	 * 17 bytes per entry: =================== 0 Graphics/Arrangement index
 	 * 
-	 * 1	Palette
+	 * 1 Palette
 	 * 
-	 * 2	Bits per pixel
+	 * 2 Bits per pixel
 	 * 
-	 * 3	Palette animation
+	 * 3 Palette animation
 	 * 
-	 * 4	Palette animation info
+	 * 4 Palette animation info
 	 * 
-	 * 5	Palette animation info (UNKNOWN, number of palettes?)
+	 * 5 Palette animation info (UNKNOWN, number of palettes?)
 	 * 
-	 * 6	UNKNOWN
+	 * 6 UNKNOWN
 	 * 
-	 * 7	Palette animation speed
+	 * 7 Palette animation speed
 	 * 
-	 * 8	Screen shift
+	 * 8 Screen shift
 	 * 
-	 * 9	Mov
+	 * 9 Mov
 	 * 
-	 * 10	Mov
+	 * 10 Mov
 	 * 
-	 * 11	Mov
+	 * 11 Mov
 	 * 
-	 * 12	Mov
+	 * 12 Mov
 	 * 
-	 * 13	Effects
+	 * 13 Effects
 	 * 
-	 * 14	Effects
+	 * 14 Effects
 	 * 
-	 * 15	Effects
+	 * 15 Effects
 	 * 
-	 * 16	Effects
-	 * 
+	 * 16 Effects
 	 */
 
 	private short[] bbgData = new short[17];
-	
+
 	/**
-		Index of the compresses graphics/arrangement to use for this
-	*/
+	 * Index of the compresses graphics/arrangement to use for this
+	 */
 	public short getGraphicsIndex() {
 		return bbgData[0];
 	}
-	
-	
+
 	/**
-	  Index of the background palette to use.
+	 * Index of the background palette to use.
 	 */
 	public short getPaletteIndex() {
 		return bbgData[1];
 	}
 
 	/**
-		Must always be 2 or 4. (TODO: change this property's type to an enum)
-	*/
+	 * Must always be 2 or 4. (TODO: change this property's type to an enum)
+	 */
 	public short getBitsPerPixel() {
 		return bbgData[2];
 	}
-	
+
 	/**
-	Bytes 13-16 of BG data in big-endian order.
-	 Exact function unknown; related to background animation effects.
-	*/
+	 * Bytes 13-16 of BG data in big-endian order. Exact function unknown;
+	 * related to background animation effects.
+	 */
 	public int getAnimation() {
-		return (bbgData[13] << 24) + (bbgData[14] << 16) + (bbgData[15] << 8) + bbgData[16];
+		return (bbgData[13] << 24) + (bbgData[14] << 16) + (bbgData[15] << 8)
+				+ bbgData[16];
 	}
 
 	@Override
 	public void Read(int index) {
 		Block main = getParent().ReadBlock(0xADEA1 + index * 17);
-		
+
 		for (int i = 0; i < 17; i++) {
 			bbgData[i] = main.ReadShort();
 		}
@@ -122,8 +118,8 @@ public class BattleBG extends RomObject implements Type {
 	}
 
 	/**
-		The handler for loading/saving all battle BGs
-	*/
+	 * The handler for loading/saving all battle BGs
+	 */
 	public class Handler extends RomObjectHandler implements Type {
 		// This handler deals with background graphics and palettes as well,
 		// even though those are technically separate "objects"
@@ -154,9 +150,9 @@ public class BattleBG extends RomObject implements Type {
 
 				gfxbits[bg.getGraphicsIndex()] = bg.getBitsPerPixel();
 			}
-			
+
 			// Now load palettes
-			
+
 			for (int i = 0; i < 114; i++) {
 				BackgroundPalette p = new BackgroundPalette();
 				rom.Add(p);

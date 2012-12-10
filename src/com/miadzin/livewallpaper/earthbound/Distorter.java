@@ -20,17 +20,14 @@ package com.miadzin.livewallpaper.earthbound;
 
 import android.graphics.Bitmap;
 
-
-
-public class Distorter
-{
+public class Distorter {
 	private final String LOG_TAG = "Distorter";
 	private Bitmap src;
-	
+
 	// There is some redundancy here: 'effect' is currently what is used
 	// in computing frames, although really there should be a list of
 	// four different effects ('dist') which are used in sequence.
-	// 
+	//
 	// 'dist' is currently unused, but ComputeFrame should be changed to
 	// make use of it as soon as the precise nature of effect sequencing
 	// can be determined.
@@ -43,7 +40,8 @@ public class Distorter
 	// Also note that "current_dist" should not be used. Distorter should be
 	// a "temporally stateless" class, meaning that all temporal effects should
 	// be computed at once, per request, rather than maintaining an internal
-	// tick count. (The idea being that it should be fast to compute any individual
+	// tick count. (The idea being that it should be fast to compute any
+	// individual
 	// frame. Since it is certainly possible to do this, there is no sense
 	// requiring that all previous frames be computed before any given desired
 	// frame.)
@@ -52,53 +50,53 @@ public class Distorter
 	private DistortionEffect[] dist = new DistortionEffect[4];
 	private int current_dist = 1;
 
-	public native void ComputeFrame(Bitmap dst, Bitmap src, int effect, int letterbox, int ticks, float alpha, int erase, short amplitude, int amplitudeAcceleration, int frequency, short frequencyAcceleration, short compression, short compressionAcceleration, short speed);  
-	
-	public DistortionEffect[] getDistortions()
-	{
-		return dist; 
+	public native void ComputeFrame(Bitmap dst, Bitmap src, int effect,
+			int letterbox, int ticks, float alpha, int erase, short amplitude,
+			int amplitudeAcceleration, int frequency,
+			short frequencyAcceleration, short compression,
+			short compressionAcceleration, short speed);
+
+	public DistortionEffect[] getDistortions() {
+		return dist;
 	}
 
-	public DistortionEffect getCurrentDistortion()
-	{
+	public DistortionEffect getCurrentDistortion() {
 		return dist[current_dist];
 	}
 
 	public DistortionEffect getEffect() {
 		return effect;
 	}
-	public int getEffectAsInt()
-	{
-		 return effect.getDistortionEffect();
+
+	public int getEffectAsInt() {
+		return effect.getDistortionEffect();
 	}
-	public void setEffect(DistortionEffect value)
-	{
+
+	public void setEffect(DistortionEffect value) {
 		effect = value;
 	}
 
-	public Bitmap getOriginal()
-	{
+	public Bitmap getOriginal() {
 		return src;
 	}
-	public void setOriginal(Bitmap value)
-	{
+
+	public void setOriginal(Bitmap value) {
 		src = value;
 	}
 
-	public void OverlayFrame(Bitmap dst, int letterbox, int ticks, float alpha, boolean erase)
-	{
+	public void OverlayFrame(Bitmap dst, int letterbox, int ticks, float alpha,
+			boolean erase) {
 		final int e = erase ? 1 : 0;
-		ComputeFrame(dst, src, getEffectAsInt(), letterbox, ticks, alpha, e, effect.getAmplitude(), effect.getAmplitudeAcceleration(), effect.getFrequency(), effect.getFrequencyAcceleration(), effect.getCompression(), effect.getCompressionAcceleration(), effect.getSpeed());
+		ComputeFrame(dst, src, getEffectAsInt(), letterbox, ticks, alpha, e,
+				effect.getAmplitude(), effect.getAmplitudeAcceleration(),
+				effect.getFrequency(), effect.getFrequencyAcceleration(),
+				effect.getCompression(), effect.getCompressionAcceleration(),
+				effect.getSpeed());
 	}
 
-	public static class DistortionEffect
-	{
-		public enum Type
-		{
-			Invalid,
-			Horizontal,
-			HorizontalInterlaced,
-			Vertical
+	public static class DistortionEffect {
+		public enum Type {
+			Invalid, Horizontal, HorizontalInterlaced, Vertical
 		}
 
 		private Type type;
@@ -124,114 +122,105 @@ public class Distorter
 			else
 				return 0;
 		}
-		
+
 		/**
-			Gets or sets the type of distortion effect to use.
-		*/
-		public Type getEffect()
-		{
+		 * Gets or sets the type of distortion effect to use.
+		 */
+		public Type getEffect() {
 			return type;
 		}
-		public void setEffect(Type value)
-		{
+
+		public void setEffect(Type value) {
 			type = value;
 		}
-		
+
 		/**
-			Gets or sets the amplitude of the distortion effect
-		*/
-		public short getAmplitude()
-		{
+		 * Gets or sets the amplitude of the distortion effect
+		 */
+		public short getAmplitude() {
 			return ampl;
 		}
-		public void setAmplitude(short value)
-		{
+
+		public void setAmplitude(short value) {
 			ampl = value;
 		}
 
 		/**
-			Gets or sets the spatial frequency of the distortion effect
-		*/
-		public int getFrequency()
-		{
+		 * Gets or sets the spatial frequency of the distortion effect
+		 */
+		public int getFrequency() {
 			return s_freq;
 		}
-		public void setFrequency(short value)
-		{
+
+		public void setFrequency(short value) {
 			s_freq = value;
 		}
 
 		/**
-			 The amount to add to the amplitude value every iteration.
-		*/
-		public int getAmplitudeAcceleration()
-		{
+		 * The amount to add to the amplitude value every iteration.
+		 */
+		public int getAmplitudeAcceleration() {
 			return ampl_accel;
 		}
-		public void setAmplitudeAcceleration(short value)
-		{
+
+		public void setAmplitudeAcceleration(short value) {
 			ampl_accel = value;
 		}
 
 		/**
-		The amount to add to the frequency value each iteration.
-		*/
-		public short getFrequencyAcceleration()
-		{
+		 * The amount to add to the frequency value each iteration.
+		 */
+		public short getFrequencyAcceleration() {
 			return s_freq_accel;
 		}
-		public void setFrequencyAcceleration(short value)
-		{
-			 s_freq_accel = value;
+
+		public void setFrequencyAcceleration(short value) {
+			s_freq_accel = value;
 		}
 
 		/**
-		 Compression factor
-		*/
-		public short getCompression()
-		{
-			return compr; 
+		 * Compression factor
+		 */
+		public short getCompression() {
+			return compr;
 		}
-		public void setCompression(short value)
-		{
-			 compr = value;
+
+		public void setCompression(short value) {
+			compr = value;
 		}
 
 		/**
-		 Change in the compression value every iteration
-		*/
-		public short getCompressionAcceleration()
-		{
-			return compr_accel; 
+		 * Change in the compression value every iteration
+		 */
+		public short getCompressionAcceleration() {
+			return compr_accel;
 		}
-		public void setCompressionAcceleration(short value)
-		{
+
+		public void setCompressionAcceleration(short value) {
 			compr_accel = value;
 		}
 
 		/**
-		 Offset for starting time.
-		*/
-		public short getStartTime()
-		{
-			return start; 
+		 * Offset for starting time.
+		 */
+		public short getStartTime() {
+			return start;
 		}
-		public void setStartTime(short value)
-		{
+
+		public void setStartTime(short value) {
 			start = value;
 		}
 
 		/**
-		 Gets or sets the "speed" of the distortion.
-		 0 = no animation, 127 = very fast, 255 = very slow for some reason
-		*/
-		public short getSpeed()
-		{
-			return speed; 
+		 * Gets or sets the "speed" of the distortion. 0 = no animation, 127 =
+		 * very fast, 255 = very slow for some reason
+		 */
+		public short getSpeed() {
+			return speed;
 		}
-		public void setSpeed(short value)
-		{
-			 speed = value;
+
+		public void setSpeed(short value) {
+			speed = value;
 		}
 	}
 

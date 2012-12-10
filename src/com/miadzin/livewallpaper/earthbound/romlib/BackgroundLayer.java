@@ -26,33 +26,30 @@ import com.miadzin.livewallpaper.earthbound.pkhack.BattleBG;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBGEffect;
 
 /**
- The BackgroundLayer class collects together the various elements of a battle background:
-  - BG Graphics
-  - BG Palette
-  - A Distorter object to compute transformations
-*/
-public class BackgroundLayer
-{
+ * The BackgroundLayer class collects together the various elements of a battle
+ * background: - BG Graphics - BG Palette - A Distorter object to compute
+ * transformations
+ */
+public class BackgroundLayer {
 	public final String LOG_TAG = "BackgroundLayer";
-	
+
 	private int entry;
 	private BackgroundGraphics gfx;
 	private BackgroundPalette pal;
 	private Distorter distort;
 	public Bitmap bmp;
-	
+
 	private final int H = 256;
 	private final int W = 256;
+
 	/**
-	    The index of the layer entry that was loaded
-	*/
-	public int getEntry()
-	{
+	 * The index of the layer entry that was loaded
+	 */
+	public int getEntry() {
 		return entry;
 	}
 
-	public Bitmap getBitmap()
-	{
+	public Bitmap getBitmap() {
 		return bmp;
 	}
 
@@ -61,63 +58,71 @@ public class BackgroundLayer
 	}
 
 	/**
-		 Constructs a BackgroundLayer object by loading the specified entry from the specified ROM object
-	*/
-	public BackgroundLayer(Rom src, int entry)
-	{
+	 * Constructs a BackgroundLayer object by loading the specified entry from
+	 * the specified ROM object
+	 */
+	public BackgroundLayer(Rom src, int entry) {
 		distort = new Distorter();
 		LoadEntry(src, entry);
 	}
 
 	/**
-		Renders a frame of the background animation into the specified Bitmap
-
-	 @param dst Bitmap object into which to render
-	 @param letterbox Size in pixels of black borders at top and bottom of image
-	 @param ticks Time value of the frame to compute
-	 @param alpha Blending opacity
-	 @param erase Whether or not to clear the destination bitmap before rendering
+	 * Renders a frame of the background animation into the specified Bitmap
+	 * 
+	 * @param dst
+	 *            Bitmap object into which to render
+	 * @param letterbox
+	 *            Size in pixels of black borders at top and bottom of image
+	 * @param ticks
+	 *            Time value of the frame to compute
+	 * @param alpha
+	 *            Blending opacity
+	 * @param erase
+	 *            Whether or not to clear the destination bitmap before
+	 *            rendering
 	 */
-	public void OverlayFrame(Bitmap dst, int letterbox, int ticks, float alpha, boolean erase)
-	{	
+	public void OverlayFrame(Bitmap dst, int letterbox, int ticks, float alpha,
+			boolean erase) {
 		distort.OverlayFrame(dst, letterbox, ticks, alpha, erase);
 	}
 
-
-	private void LoadGraphics(Rom src, int n)
-	{
-		gfx = (BackgroundGraphics)src.GetObject("BackgroundGraphics", n);
+	private void LoadGraphics(Rom src, int n) {
+		gfx = (BackgroundGraphics) src.GetObject("BackgroundGraphics", n);
 	}
 
-	private void LoadPalette(Rom src, int n)
-	{
-		pal = (BackgroundPalette)src.GetObject("BackgroundPalette", n);
+	private void LoadPalette(Rom src, int n) {
+		pal = (BackgroundPalette) src.GetObject("BackgroundPalette", n);
 	}
 
-	private void LoadEffect(Rom src, int n)
-	{
-		BattleBGEffect effect = (BattleBGEffect)src.GetObject("BattleBGEffect", n);
+	private void LoadEffect(Rom src, int n) {
+		BattleBGEffect effect = (BattleBGEffect) src.GetObject(
+				"BattleBGEffect", n);
 
 		distort.getEffect().setAmplitude(effect.getAmplitude());
-		distort.getEffect().setAmplitudeAcceleration (effect.getAmplitudeAcceleration());
+		distort.getEffect().setAmplitudeAcceleration(
+				effect.getAmplitudeAcceleration());
 		distort.getEffect().setCompression(effect.getCompression());
-		distort.getEffect().setCompressionAcceleration(effect.getCompressionAcceleration());
+		distort.getEffect().setCompressionAcceleration(
+				effect.getCompressionAcceleration());
 		distort.getEffect().setFrequency(effect.getFrequency());
-		distort.getEffect().setFrequencyAcceleration(effect.getFrequencyAcceleration());
+		distort.getEffect().setFrequencyAcceleration(
+				effect.getFrequencyAcceleration());
 		distort.getEffect().setSpeed(effect.getSpeed());
-		
+
 		if (effect.getType() == 1)
-			distort.getEffect().setEffect(Distorter.DistortionEffect.Type.Horizontal);
+			distort.getEffect().setEffect(
+					Distorter.DistortionEffect.Type.Horizontal);
 		else if (effect.getType() == 3)
-			distort.getEffect().setEffect(Distorter.DistortionEffect.Type.Vertical);
+			distort.getEffect().setEffect(
+					Distorter.DistortionEffect.Type.Vertical);
 		else
-			distort.getEffect().setEffect(Distorter.DistortionEffect.Type.HorizontalInterlaced);
+			distort.getEffect().setEffect(
+					Distorter.DistortionEffect.Type.HorizontalInterlaced);
 	}
 
-	private void LoadEntry(Rom src, int n)
-	{
+	private void LoadEntry(Rom src, int n) {
 		entry = n;
-		BattleBG bg = (BattleBG)src.GetObject("BattleBG", n);
+		BattleBG bg = (BattleBG) src.GetObject("BattleBG", n);
 
 		// Set graphics / palette
 		LoadGraphics(src, bg.getGraphicsIndex());
@@ -125,10 +130,10 @@ public class BackgroundLayer
 
 		int e = bg.getAnimation();
 
-		short e1 = (short) (((byte)(e >> 24)) & 0xFF);
-		short e2 = (short) (((byte)(e >> 16)) & 0xFF);
-		short e3 = (short) (((byte)(e >> 8)) & 0xFF);
-		short e4 = (short) (((byte)(e)) & 0xFF);
+		short e1 = (short) (((byte) (e >> 24)) & 0xFF);
+		short e2 = (short) (((byte) (e >> 16)) & 0xFF);
+		short e3 = (short) (((byte) (e >> 8)) & 0xFF);
+		short e4 = (short) (((byte) (e)) & 0xFF);
 
 		if (e2 != 0)
 			LoadEffect(src, e2);
@@ -138,9 +143,8 @@ public class BackgroundLayer
 		InitializeBitmap();
 	}
 
-	private void InitializeBitmap()
-	{
-		bmp = Bitmap.createBitmap(W, H , Bitmap.Config.ARGB_8888);
+	private void InitializeBitmap() {
+		bmp = Bitmap.createBitmap(W, H, Bitmap.Config.ARGB_8888);
 		gfx.Draw(bmp, pal);
 		distort.setOriginal(bmp);
 	}

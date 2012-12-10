@@ -23,18 +23,16 @@ import java.lang.reflect.Type;
 
 public class BackgroundGraphics extends RomGraphics implements Type {
 	private final String LOG_TAG = "BackgroundGraphics";
-	
-	
-	
+
 	@Override
 	public void Read(int index) throws Exception {
 		// Graphics pointer table entry
 		Block gfxPtrBlock = getParent().ReadBlock(0xAD9A1 + index * 4);
 		// int gfxPtr = Rom.SnesToHex(gfxPtrBlock.ReadInt());
-		
+
 		// Read graphics
-		LoadGraphics(getParent().ReadBlock(
-				Rom.SnesToHex(gfxPtrBlock.ReadInt())));
+		LoadGraphics(getParent()
+				.ReadBlock(Rom.SnesToHex(gfxPtrBlock.ReadInt())));
 
 		// Arrangement pointer table entry
 		Block arrPtrBlock = getParent().ReadBlock(0xADB3D + index * 4);

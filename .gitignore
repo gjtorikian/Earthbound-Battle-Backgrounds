@@ -4,3 +4,4 @@ libs/
 obj/
 bin/
 gen/
+proguard/

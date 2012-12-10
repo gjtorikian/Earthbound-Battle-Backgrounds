@@ -60,7 +60,7 @@ public class EarthboundLiveWallpaperSettings extends PreferenceActivity
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		//android.os.Debug.waitForDebugger();
+		// android.os.Debug.waitForDebugger();
 
 		getPreferenceManager().setSharedPreferencesName(
 				EarthboundLiveWallpaper.SHARED_PREFS_NAME);
@@ -103,16 +103,18 @@ public class EarthboundLiveWallpaperSettings extends PreferenceActivity
 					}
 				});
 
-		/*PreferenceScreen galleryView = (PreferenceScreen) findPreference(GALLERY);
-		galleryView.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-			@Override
-			public boolean onPreferenceClick(final Preference preference) {
-				startActivity(new Intent(getBaseContext(), GalleryActivity.class));
+		/*
+		 * PreferenceScreen galleryView = (PreferenceScreen)
+		 * findPreference(GALLERY); galleryView.setOnPreferenceClickListener(new
+		 * OnPreferenceClickListener() {
+		 * 
+		 * @Override public boolean onPreferenceClick(final Preference
+		 * preference) { startActivity(new Intent(getBaseContext(),
+		 * GalleryActivity.class));
+		 * 
+		 * return true; } });
+		 */
 
-				return true;
-			}
-		});*/
-		
 		frameskip = (ListPreference) findPreference(FRAMESKIP);
 		frameskip.setSummary(getString(R.string.frameskip_summary,
 				sharedPreferences.getString(FRAMESKIP, "3")));

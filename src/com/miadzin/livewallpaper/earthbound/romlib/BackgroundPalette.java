@@ -21,19 +21,20 @@ package com.miadzin.livewallpaper.earthbound.romlib;
 
 import java.lang.reflect.Type;
 
-public class BackgroundPalette extends Palette  implements Type {
-		private String LOG_TAG = "BackgroundPalette";
-		@Override
-		public void Read(int index) throws Exception {
-			Block ptr = getParent().ReadBlock(0xADCD9 + index * 4);
-			address = Rom.SnesToHex(ptr.ReadInt());
+public class BackgroundPalette extends Palette implements Type {
+	private String LOG_TAG = "BackgroundPalette";
 
-			Block data = getParent().ReadBlock(address);
-			ReadPalette(data, bpp, 1);
-		}
+	@Override
+	public void Read(int index) throws Exception {
+		Block ptr = getParent().ReadBlock(0xADCD9 + index * 4);
+		address = Rom.SnesToHex(ptr.ReadInt());
 
-		@Override
-		public void Write(int index) {
-
-		}
+		Block data = getParent().ReadBlock(address);
+		ReadPalette(data, bpp, 1);
 	}
+
+	@Override
+	public void Write(int index) {
+
+	}
+}

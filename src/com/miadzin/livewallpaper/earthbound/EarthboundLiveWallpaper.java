@@ -22,6 +22,7 @@ package com.miadzin.livewallpaper.earthbound;
 import java.io.IOException;
 import java.io.InputStream;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -30,7 +31,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.Rect;
+import android.graphics.Point;
+import android.os.Build;
 import android.os.Handler;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
@@ -54,7 +56,8 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 
 	public static Rom data;
 
-	private final boolean RELEASED = false;
+	private final boolean RELEASED = true;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -63,7 +66,7 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 		BattleBG BBG = new BattleBG();
 
 		//android.os.Debug.waitForDebugger();
-		
+
 		try {
 			Rom.registerType("BattleBGEffect", BattleBGEffect.class,
 					BBGE.new Handler());
@@ -115,23 +118,21 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 		private BackgroundLayer layer2;
 
 		private Bitmap bmp;
+		private Paint paint;
 
 		private SharedPreferences mPrefs;
 
-		public int width = 0;
-		public int height = 0;
-
+		public int mWidth;
+		public int mHeight;
 		private float scaledWidth;
 		private float scaledHeight;
-		private float dy;
 
 		private int tick = 0;
-		private int frameskip = 6;
-
-		private Display display;
+		private int frameskip = 3;
+		private int aspectRatio = 16;
 
 		private final Handler mHandler = new Handler();
-	    
+
 		private final Runnable mDrawBackground = new Runnable() {
 			@Override
 			public void run() {
@@ -142,9 +143,6 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 
 		private LicenseCheckerCallback mLicenseCheckerCallback;
 		private LicenseChecker mChecker;
-
-		private int offestX = 0;
-		private int offestY = 0;
 
 		private EarthboundBattleEngine() {
 
@@ -157,6 +155,7 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			}
 		}
 
+		@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
 		@Override
 		public void onCreate(SurfaceHolder surfaceHolder) {
 			super.onCreate(surfaceHolder);
@@ -166,9 +165,19 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			mPrefs.registerOnSharedPreferenceChangeListener(this);
 			onSharedPreferenceChanged(mPrefs, null);
 
-			display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
+			Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE))
 					.getDefaultDisplay();
-
+			
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				Point size = new Point();
+				display.getSize(size);
+				mWidth = size.x;
+				mHeight = size.y;
+			} else {
+				mWidth = display.getWidth();
+				mHeight = display.getHeight();
+			}
+			
 			final String layer1_val = mPrefs.getString(
 					EarthboundLiveWallpaperSettings.KEY_LAYER_ONE, "270");
 			final String layer2_val = mPrefs.getString(
@@ -182,13 +191,30 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 
 			frameskip = Integer.parseInt(mPrefs.getString(
 					EarthboundLiveWallpaperSettings.FRAMESKIP, "3"));
+
+			aspectRatio = Integer.parseInt(mPrefs.getString(
+					EarthboundLiveWallpaperSettings.ASPECT_RATIO, "16"));
+
+			bmp = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888);
+
+			// Explicitly "set" each pixel...some bug in ICS forces this?
+			for (int x = 0; x < 256; x++) {
+				for (int y = 0; y < 256; y++) {
+					bmp.setPixel(x, y, Color.argb(255, 0, 0, 0));
+				}
+			}
+
+			paint = new Paint();
+			paint.setAntiAlias(true);
+			paint.setFilterBitmap(true);
+			paint.setDither(true);
 		}
 
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
 			mHandler.removeCallbacks(mDrawBackground);
-			
+
 			if (RELEASED)
 				mChecker.onDestroy();
 		}
@@ -197,21 +223,22 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 		public void onVisibilityChanged(boolean visible) {
 			mVisible = visible;
 			Log.d(LOG_TAG, "Visibility changed: " + String.valueOf(visible));
+			
 			if (visible) {
 				drawFrame();
-			}
-			else {
+			} else {
 				mHandler.removeCallbacks(mDrawBackground);
 			}
-			//width = display.getWidth();
-			//height = display.getHeight();
 
-			//scaledWidth = ((float) width )/ 256;
-			//scaledHeight = ((float) height ) / 256;
-
-			
+			scaledWidth = ((float) mWidth) / 256;
+			scaledHeight = ((float) mHeight) / 256;
 		}
 
+        @Override
+        public void onSurfaceCreated(SurfaceHolder holder) {
+            super.onSurfaceCreated(holder);
+        }
+        
 		@Override
 		public void onSurfaceDestroyed(SurfaceHolder holder) {
 			super.onSurfaceDestroyed(holder);
@@ -222,27 +249,16 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 
 		void drawFrame() {
 			final SurfaceHolder holder = getSurfaceHolder();
-            final Rect frame = holder.getSurfaceFrame();
-            final int width = frame.width();
-            final int height = frame.height();
-            
-			//scaledWidth = ((float) width )/ 256;
-			//scaledHeight = ((float) height ) / 256;
-            
-			display = ((WindowManager) getBaseContext().getSystemService(
-					Context.WINDOW_SERVICE)).getDefaultDisplay();
 
-			final int aspectRatio = Integer.parseInt(mPrefs.getString(
-					EarthboundLiveWallpaperSettings.ASPECT_RATIO, "16"));
-
-			Canvas canvas = holder.lockCanvas();
-			
+			Canvas canvas = null;
 			try {
 				synchronized (holder) {
-					krakenFrame(canvas, aspectRatio, width, height);
+					canvas = holder.lockCanvas();
+					krakenFrame(canvas, mWidth, mHeight);
 				}
-			} finally {
+
 				holder.unlockCanvasAndPost(canvas);
+			} finally {
 			}
 
 			mHandler.removeCallbacks(mDrawBackground);
@@ -251,14 +267,12 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			}
 		}
 
-		void krakenFrame(Canvas canvas, int aspectRatio, int width, int height) {
+		void krakenFrame(Canvas canvas, int width, int height) {
 			canvas.save();
 			canvas.drawColor(0xff000000);
 
-			bmp = Bitmap.createBitmap(256, 256, Bitmap.Config.ARGB_8888);
-	
 			float alpha = 0.5f;
-			
+
 			if (layer2.getEntry() == 0)
 				alpha = 1.0f;
 
@@ -268,41 +282,7 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			Matrix matrix = new Matrix();
 			matrix.postScale(scaledWidth, scaledHeight + .44f);
 			
-			Paint paint = new Paint();
-			paint.setAntiAlias(true);
-			paint.setFilterBitmap(true);
-			paint.setDither(true);
-			
-			/*
-            bmp.setPixel(50, 10, Color.RED);
-            bmp.setPixel(50, 11, Color.RED);
-            bmp.setPixel(50, 12, Color.RED);
-            bmp.setPixel(50, 13, Color.RED);
-            bmp.setPixel(50, 14, Color.RED);
-            bmp.setPixel(50, 15, Color.RED);
-            bmp.setPixel(50, 16, Color.RED);
-            bmp.setPixel(50, 17, Color.RED);
-            bmp.setPixel(50, 18, Color.RED);
-            bmp.setPixel(50, 19, Color.RED);
-            bmp.setPixel(50, 20, Color.RED);
-            
-            bmp.setPixel(254, 100, Color.RED);
-            bmp.setPixel(254, 101, Color.RED);
-            bmp.setPixel(254, 102, Color.RED);
-            bmp.setPixel(254, 103, Color.RED);
-            bmp.setPixel(254, 104, Color.RED);
-            bmp.setPixel(254, 105, Color.RED);
-            bmp.setPixel(254, 106, Color.RED);
-            
-            bmp.setPixel(255, 100, Color.RED);
-            bmp.setPixel(255, 101, Color.RED);
-            bmp.setPixel(255, 102, Color.RED);
-            bmp.setPixel(255, 103, Color.RED);
-            bmp.setPixel(255, 104, Color.RED);
-            bmp.setPixel(255, 105, Color.RED);
-            bmp.setPixel(255, 106, Color.RED);*/
-			
-			canvas.drawBitmap(bmp, 0, 0, null);
+			canvas.drawBitmap(bmp, matrix, paint);
 
 			tick += (frameskip);
 
@@ -310,9 +290,6 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 			if (tick % 60 == 0) {
 				System.gc();
 			}
-
-			bmp.recycle();
-			bmp = null;
 
 			canvas.restore();
 		}
@@ -344,6 +321,13 @@ public class EarthboundLiveWallpaper extends WallpaperService {
 					|| key.equals(EarthboundLiveWallpaperSettings.FRAMESKIP)) {
 				frameskip = Integer.parseInt(mPrefs.getString(
 						EarthboundLiveWallpaperSettings.FRAMESKIP, "3"));
+				changed = true;
+			}
+
+			if (key == null
+					|| key.equals(EarthboundLiveWallpaperSettings.ASPECT_RATIO)) {
+				aspectRatio = Integer.parseInt(mPrefs.getString(
+						EarthboundLiveWallpaperSettings.ASPECT_RATIO, "16"));
 				changed = true;
 			}
 

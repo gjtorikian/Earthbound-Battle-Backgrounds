@@ -48,7 +48,7 @@ public class BattleBGEffect extends RomObject implements Type {
 	}
 
 	public short getFrequency() {
-		return  (short) (dataBBGE[3] + (dataBBGE[4] << 8));
+		return (short) (dataBBGE[3] + (dataBBGE[4] << 8));
 	}
 
 	public void setFrequency(short value) {
@@ -105,7 +105,7 @@ public class BattleBGEffect extends RomObject implements Type {
 	}
 
 	public void setCompressionAcceleration(short value) {
-		dataBBGE[15] =  value;
+		dataBBGE[15] = value;
 		dataBBGE[16] = (short) (value >> 8);
 	}
 
