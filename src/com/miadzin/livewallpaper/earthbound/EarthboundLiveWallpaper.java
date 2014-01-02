@@ -40,8 +40,8 @@ import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.WindowManager;
 
-import com.android.vending.licensing.LicenseChecker;
-import com.android.vending.licensing.LicenseCheckerCallback;
+import com.google.android.vending.licensing.LicenseChecker;
+import com.google.android.vending.licensing.LicenseCheckerCallback;
 import com.miadzin.livewallpaper.earthbound.licensing.LicenseCallback;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBG;
 import com.miadzin.livewallpaper.earthbound.pkhack.BattleBGEffect;
