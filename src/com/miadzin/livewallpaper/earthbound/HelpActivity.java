@@ -20,6 +20,8 @@
 package com.miadzin.livewallpaper.earthbound;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
@@ -27,56 +29,10 @@ import android.webkit.WebViewClient;
 
 public class HelpActivity extends Activity {
 
-	// Use this key and one of the values below when launching this activity via
-	// intent. If not
-	// present, the default page will be loaded.
-	public static final String REQUESTED_PAGE_KEY = "requested_page_key";
-	public static final String DEFAULT_PAGE = "help.html";
-	private static final String BASE_URL = "file:///android_asset/";
-
-	private WebView webView;
-
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
-		setContentView(R.xml.help);
-
-		webView = (WebView) findViewById(R.id.helpbrowser);
-		webView.setWebViewClient(new HelpClient());
-
-		try {
-			if (icicle != null) {
-				webView.restoreState(icicle);
-			} else {
-				webView.loadUrl(BASE_URL + DEFAULT_PAGE);
-			}
-		} catch (NullPointerException npe) {
-			Log.e("HelpActivity", npe.toString());
-		}
+		 startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse("https://github.com/gjtorikian/Earthbound-Battle-Backgrounds/blob/master/README.md")));
 	}
 
-	@Override
-	protected void onSaveInstanceState(Bundle state) {
-		webView.saveState(state);
-	}
-
-	private final class HelpClient extends WebViewClient {
-		@Override
-		public void onPageFinished(WebView view, String url) {
-			setTitle(view.getTitle());
-		}
-	}
-
-	public static String getBaseUrl() {
-		return BASE_URL;
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		try {
-			super.onWindowFocusChanged(hasFocus);
-		} catch (NullPointerException npe) {
-			Log.e("HelpActivity", npe.toString());
-		}
-	}
 }
