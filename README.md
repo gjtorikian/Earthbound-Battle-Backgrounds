@@ -2,7 +2,7 @@ The Earthbound Battle Background live wallpaper is exactly what its name implies
 
 Every battle background is composed of two layers, each with 326 possible styles (including "blank"). Thus, there are 326 * 326 = 106,276 possible different background combinations. Obviously, this many don't exist in the game--they only _potentially_ exist.
 
-It's pretty damn hard to find out which battle backgrounds correspond to which enemies. You can review the list of enemies matched with known battle backgrounds to try and get your favorite on the *Suggested Layers* option. If you discover a new one, please, email me and I'll add it to the list, giving you full credit! You can find a COMPLETE list of potential battle backgrounds by going here: [http://eblw.galaxyclock.com](http://eblw.galaxyclock.com).
+It's pretty damn hard to find out which battle backgrounds correspond to which enemies. You can review the list of enemies matched with known battle backgrounds to try and get your favorite on the *Suggested Layers* option. If you discover a new one, please, email me and I'll add it to the list, giving you full credit! You can find a COMPLETE list of potential battle backgrounds by going here: http://gjtorikian.github.io/Earthbound-Battle-Backgrounds-JS/samples.
 
 ### How it Works
 
